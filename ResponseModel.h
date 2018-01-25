@@ -1,0 +1,99 @@
+//
+//  ResponseModel.h
+//  OnlineCalibration
+//
+//  Created by Paul on 16.11.17.
+//  Copyright (c) 2017 Paul Bergmann. All rights reserved.
+//
+//  Commented
+//
+
+#ifndef __OnlineCalibration__ResponseModel__
+#define __OnlineCalibration__ResponseModel__
+
+#include "StandardIncludes.h"
+
+/**
+ * Represents data needed for the grossberg camera response model using the first 4 basis functions
+ */
+class ResponseModel
+{
+public:
+    
+    /**
+     * Constructor
+     * 
+     * Initialize response model with Grossberg parameters that correspond to identity response
+     * Also initialize discretely sampled inverse response vector for 256 output intensitiy values
+     */
+    ResponseModel()
+    {
+        m_inverse_response_vector.clear();
+        for(int i = 0;i < 256;i++)
+        {
+            m_inverse_response_vector.push_back(i);
+        }
+        
+        m_grossberg_parameters.clear();
+        m_grossberg_parameters.push_back(6.1);
+        m_grossberg_parameters.push_back(0.0);
+        m_grossberg_parameters.push_back(0.0);
+        m_grossberg_parameters.push_back(0.0);
+    }
+    
+    /**
+     * Apply inverse response function to output intensity 
+     *
+     * @param o Output intensity {0,1,...,255}
+     * @returns Inverse response applied to o i.e. f^(-1)(o)
+     */
+    double removeResponse(int o)
+    {
+        return m_inverse_response_vector.at(o);
+    }
+    
+    /**
+     * Overwrite grossberberg parameter vector
+     */
+    void setGrossbergParameterVector(std::vector<double> params)
+    {
+        m_grossberg_parameters = params;
+    }
+    
+    /**
+     * Fetch grossberg parameter vector
+     */
+    std::vector<double> getResponseEstimate()
+    {
+        return m_grossberg_parameters;
+    }
+    
+    /**
+     * Overwrite inverse response function vector
+     */
+    void setInverseResponseVector(double* new_inverse)
+    {
+        for(int i = 0;i < 256;i++)
+        {
+            m_inverse_response_vector.at(i) = 255*new_inverse[i];
+        }
+    }
+
+private:
+    
+    /**
+     * Discrete vector of 256 values representing the sampled inverse camera response function
+     * for the 256 image output intensities.
+     * This vector is stored here for efficiency since it is not straightforward to invert the response 
+     * given only the grossberg parameters.
+     */
+    std::vector<double> m_inverse_response_vector;
+    
+    /**
+     * Grossberg parameter vector (4 values) representing the camera response
+     */
+    std::vector<double> m_grossberg_parameters;
+
+};
+
+#endif /* defined(__OnlineCalibration__ResponseModel__) */
