@@ -12,9 +12,7 @@
 #define __OnlineCalibration__Database__
 
 #include "StandardIncludes.h"
-
 #include "Frame.h"
-
 #include "VignetteModel.h"
 #include "ResponseModel.h"
 

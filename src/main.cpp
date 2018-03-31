@@ -7,15 +7,10 @@
 //
 
 #include "StandardIncludes.h"
-
 #include "ImageReader.h"
-
 #include "Tracker.h"
-
 #include "RapidExposureTimeEstimator.h"
-
 #include "Database.h"
-
 #include "NonlinearOptimizer.h"
 
 using namespace std;
