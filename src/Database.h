@@ -22,7 +22,7 @@ class Database
 public:
     
     /**
-     * Initize database
+     * Initialize database
      *
      * @param image_width  Width of input images in pixels
      * @param image_height Height of input images in pixels
@@ -59,6 +59,7 @@ public:
      *
      * @returns Most current image in the databse
      */
+     // Todo: change return type to reference
     cv::Mat fetchActiveImage()
     {
         return m_tracked_frames.at(m_tracked_frames.size()-1).m_image;

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="ONLINE_CALIB"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\usr\share\;CMake Files\..\..\..\..\..\usr\share\OpenCV\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/work/wangr/private/code/online_calibration/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/work/wangr/private/code/online_calibration/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/work/wangr/private/code/online_calibration/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="online_calib_demo">
+				<Option output="/work/wangr/private/code/online_calibration/cmake-build-debug/bin/online_calib_demo" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/work/wangr/private/code/online_calibration/src"/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 online_calib_demo"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="online_calib_demo/fast">
+				<Option output="/work/wangr/private/code/online_calibration/cmake-build-debug/bin/online_calib_demo" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/work/wangr/private/code/online_calibration/src"/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 online_calib_demo/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="online_calib">
+				<Option output="/work/wangr/private/code/online_calibration/cmake-build-debug/lib/libonline_calib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/work/wangr/private/code/online_calibration/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/work/wangr/private/code/online_calibration/src"/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 online_calib"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="online_calib/fast">
+				<Option output="/work/wangr/private/code/online_calibration/cmake-build-debug/lib/libonline_calib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/work/wangr/private/code/online_calibration/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/work/wangr/private/code/online_calibration/src"/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 online_calib/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/work/wangr/private/code/online_calibration/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/Database.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/Database.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/Feature.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/Frame.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/GainRobustTracker.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/GainRobustTracker.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/ImageReader.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/ImageReader.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/JacobianGenerator.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/JacobianGenerator.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/NonlinearOptimizer.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/NonlinearOptimizer.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/OptimizationBlock.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/OptimizationBlock.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/OptimizedPoint.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/RapidExposureTimeEstimator.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/RapidExposureTimeEstimator.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/ResponseModel.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/StandardIncludes.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/Tracker.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/Tracker.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/VignetteModel.cpp">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/VignetteModel.h">
+			<Option target="online_calib"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/src/main.cpp">
+			<Option target="online_calib_demo"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/../../../../../usr/share/OpenCV/OpenCVConfig-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/../../../../../usr/share/OpenCV/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/../../../../../usr/share/OpenCV/OpenCVModules-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/work/wangr/private/code/online_calibration/../../../../../usr/share/OpenCV/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

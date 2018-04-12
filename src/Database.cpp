@@ -21,6 +21,7 @@ void Database::visualizeTracking()
 {
     // Fetch tracking information and create a canvas
     Frame last_frame = m_tracked_frames.at(m_tracked_frames.size()-1);
+    // Todo: change to class member
     cv::Mat draw_image = last_frame.m_image.clone();
     
     // Draw features on the canvas
@@ -30,6 +31,7 @@ void Database::visualizeTracking()
     }
     
     // Correct the frame based on the current estimate
+    // Todo: change to class member
     cv::Mat corrected_frame = last_frame.m_image.clone();
     
     for(int r = 0; r < corrected_frame.rows;r++)
@@ -63,6 +65,7 @@ void Database::visualizeTracking()
     cv::waitKey(1);
 }
 
+// Todo: change the return to parameter passed by reference
 std::vector<cv::Point2f> Database::fetchActiveFeatureLocations()
 {
     std::vector<cv::Point2f> point_locations;

@@ -20,10 +20,12 @@ Tracker::Tracker(int patch_size,int nr_active_features,int nr_pyramid_levels,Dat
 void Tracker::trackNewFrame(cv::Mat input_image)
 {
     // Compute gradient (necessary for weighting factors)
+    // Todo: move to class member
     cv::Mat gradient_image;
     computeGradientImage(input_image, gradient_image);
     
     // Correct the input image based on the current response and vignette estimate (exposure time not known yet)
+    // Todo: move to class member
     cv::Mat corrected_frame = input_image.clone();
     photometricallyCorrectImage(corrected_frame);
  
@@ -105,6 +107,7 @@ void Tracker::trackNewFrame(cv::Mat input_image)
     frame.m_exp_time = 1.0;
     
     // Reject features that have been tracked to the side of the image
+    // Todo: validity_vector can be combined with tracked_point_status to one vector?
     std::vector<int> validity_vector = checkLocationValidity(tracked_points_new_frame);
     
     int nr_pushed_features = 0;
@@ -116,6 +119,7 @@ void Tracker::trackNewFrame(cv::Mat input_image)
         
         // Feature is valid, set its data and push it back
         Feature* f = new Feature();
+        // Todo: remove os, is, gs
         std::vector<double> os = bilinearInterpolateImagePatch(input_image,tracked_points_new_frame.at(i).x,tracked_points_new_frame.at(i).y);
         f->m_output_values = os;
         std::vector<double> is = bilinearInterpolateImagePatch(corrected_frame,tracked_points_new_frame.at(i).x,tracked_points_new_frame.at(i).y);
@@ -148,6 +152,7 @@ void Tracker::trackNewFrame(cv::Mat input_image)
         f->m_xy_location = new_feature_locations.at(p);
         f->m_next_feature = NULL;
         f->m_prev_feature = NULL;
+        // Todo: remove os, is, gs
         std::vector<double> os = bilinearInterpolateImagePatch(input_image,new_feature_locations.at(p).x,new_feature_locations.at(p).y);
         f->m_output_values = os;
         std::vector<double> is = bilinearInterpolateImagePatch(corrected_frame,new_feature_locations.at(p).x,new_feature_locations.at(p).y);
@@ -158,9 +163,9 @@ void Tracker::trackNewFrame(cv::Mat input_image)
     }
 }
 
+// Todo: change both types to reference
 std::vector<cv::Point2f> Tracker::extractFeatures(cv::Mat frame,std::vector<cv::Point2f> old_features)
 {
-    
     std::vector<cv::Point2f> new_features;
 
     // No new features have to be extracted
@@ -180,7 +185,8 @@ std::vector<cv::Point2f> Tracker::extractFeatures(cv::Mat frame,std::vector<cv::
         
     int cell_height = floor(im_height / cells_r);
     int cell_width  = floor(im_width  / cells_c);
-    
+
+    // Todo: change to class member
     int pointDistributionMap[cells_r][cells_c];
     for(int r = 0;r < cells_r;r++)
     {
@@ -322,6 +328,7 @@ std::vector<double> Tracker::bilinearInterpolateImagePatch(cv::Mat image,double 
     return result;
 }
 
+// Todo: change return to parameter passed by ref
 std::vector<int> Tracker::checkLocationValidity(std::vector<cv::Point2f> points)
 {
     // Check for each passed point location if the patch centered around it falls completely within the input images
@@ -350,6 +357,7 @@ std::vector<int> Tracker::checkLocationValidity(std::vector<cv::Point2f> points)
     return is_valid;
 }
 
+// Todo: change parameter type to reference (or const reference)
 void Tracker::initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_image)
 {
     std::vector<cv::Point2f> old_f;
@@ -388,8 +396,10 @@ void Tracker::initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_imag
 void Tracker::computeGradientImage(cv::Mat input_image,cv::Mat &gradient_image)
 {
     // Blur the input image a little and apply discrete 3x3 sobel filter in x,y directions to obtain a gradient estimate
+    // Todo: change to class member
     cv::Mat blurred_image;
     cv::GaussianBlur( input_image, blurred_image, cv::Size(3,3), 0, 0, cv::BORDER_DEFAULT );
+    // Todo: change to class member
     cv::Mat grad_x,grad_y;
     cv::Sobel( blurred_image, grad_x, CV_16S, 1, 0, 3, 1.0, 0, cv::BORDER_DEFAULT );
     cv::Sobel( blurred_image, grad_y, CV_16S, 0, 1, 3, 1.0, 0, cv::BORDER_DEFAULT );

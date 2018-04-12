@@ -15,7 +15,12 @@ GainRobustTracker::GainRobustTracker(int patch_size,int pyramid_levels)
     m_pyramid_levels = pyramid_levels;
 }
 
-double GainRobustTracker::trackImagePyramids(cv::Mat frame_1,cv::Mat frame_2,std::vector<cv::Point2f> pts_1,std::vector<cv::Point2f>& pts_2,std::vector<int>& point_status)
+// Todo: change frame_1 frame 2 to ref (or const ref), pts_1 to ref
+double GainRobustTracker::trackImagePyramids(cv::Mat frame_1,
+                                             cv::Mat frame_2,
+                                             std::vector<cv::Point2f> pts_1,
+                                             std::vector<cv::Point2f>& pts_2,
+                                             std::vector<int>& point_status)
 {
     // All points valid in the beginning of tracking
     std::vector<int> point_validity;
@@ -46,18 +51,22 @@ double GainRobustTracker::trackImagePyramids(cv::Mat frame_1,cv::Mat frame_2,std
         for(int i = 0;i < pts_1.size();i++)
         {
             cv::Point2f scaled_point;
-            scaled_point.x = pts_1.at(i).x/pow(2,level);
-            scaled_point.y = pts_1.at(i).y/pow(2,level);
+            scaled_point.x = (float)(pts_1.at(i).x/pow(2,level));
+            scaled_point.y = (float)(pts_1.at(i).y/pow(2,level));
             scaled_tracked_points.push_back(scaled_point);
             
             cv::Point2f scaled_estimate;
-            scaled_point.x = tracking_estimates.at(i).x/pow(2,level);
-            scaled_point.y = tracking_estimates.at(i).y/pow(2,level);
-            scaled_tracking_estimates.push_back(scaled_point);
+            scaled_estimate.x = (float)(tracking_estimates.at(i).x/pow(2,level));
+            scaled_estimate.y = (float)(tracking_estimates.at(i).y/pow(2,level));
+            scaled_tracking_estimates.push_back(scaled_estimate);
         }
         
         // Perform tracking on current level
-        double exp_estimate = trackImageExposurePyr(old_pyramid.at(level), new_pyramid.at(level), scaled_tracked_points, scaled_tracking_estimates, point_validity);
+        double exp_estimate = trackImageExposurePyr(old_pyramid.at(level),
+                                                    new_pyramid.at(level),
+                                                    scaled_tracked_points,
+                                                    scaled_tracking_estimates,
+                                                    point_validity);
         
         // Optional: Do something with the estimated exposure ratio
         // std::cout << "Estimated exposure ratio of current level: " << exp_estimate << std::endl;
@@ -73,8 +82,8 @@ double GainRobustTracker::trackImagePyramids(cv::Mat frame_1,cv::Mat frame_2,std
                 continue;
             
             cv::Point2f scaled_point;
-            scaled_point.x = scaled_tracking_estimates.at(i).x*pow(2,level);
-            scaled_point.y = scaled_tracking_estimates.at(i).y*pow(2,level);
+            scaled_point.x = (float)(scaled_tracking_estimates.at(i).x*pow(2,level));
+            scaled_point.y = (float)(scaled_tracking_estimates.at(i).y*pow(2,level));
             
             tracking_estimates.at(i) = scaled_point;
         }
@@ -94,7 +103,12 @@ double GainRobustTracker::trackImagePyramids(cv::Mat frame_1,cv::Mat frame_2,std
  * refer to the photometric calibration paper 
  * introducing gain robust KLT tracking by Kim et al.
  */
-double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,cv::Mat new_image,std::vector<cv::Point2f> input_points,std::vector<cv::Point2f>& output_points,std::vector<int>& point_validity)
+ // Todo: change Mat and vector to ref
+double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,
+                                                cv::Mat new_image,
+                                                std::vector<cv::Point2f> input_points,
+                                                std::vector<cv::Point2f>& output_points,
+                                                std::vector<int>& point_validity)
 {
     // Number of points to track
     int nr_points = static_cast<int>(input_points.size());
@@ -195,7 +209,7 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,cv::Mat new_im
                 }
             }
             
-            //Back up U for resubstitution
+            //Back up U for re-substitution
             Us.push_back(U);
             
             //Invert matrix U for this point and write it to diagonal of overall U_INV matrix
@@ -241,7 +255,7 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,cv::Mat new_im
             output_points.at(p).x += displacement.at<double>(0,0);
             output_points.at(p).y += displacement.at<double>(1,0);
             
-            // Filter out this point if too close at the boundarys
+            // Filter out this point if too close at the boundaries
             int filter_margin = 2;
             double x = output_points.at(p).x;
             double y = output_points.at(p).y;

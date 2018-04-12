@@ -109,7 +109,11 @@ int main(int argc, const char * argv[]) {
     /**
      * Setup the nonlinear optimizer
      */
-    NonlinearOptimizer backend_optimizer(keyframe_spacing,&database,safe_zone_size,min_keyframes_valid,tracker_patch_size);
+    NonlinearOptimizer backend_optimizer(keyframe_spacing,
+                                         &database,
+                                         safe_zone_size,
+                                         min_keyframes_valid,
+                                         tracker_patch_size);
     
     /**
      * Set up the object that handles the tracking and receives new images, extracts features
@@ -165,7 +169,7 @@ int main(int argc, const char * argv[]) {
         bool is_optimizing = g_is_optimizing;
         pthread_mutex_unlock(&g_is_optimizing_mutex);
         
-        // Optimization is still running, dont do anything and keep tracking
+        // Optimization is still running, don't do anything and keep tracking
         if(is_optimizing)
         {
             continue;

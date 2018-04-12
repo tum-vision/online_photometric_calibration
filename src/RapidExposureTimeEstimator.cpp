@@ -111,9 +111,11 @@ double RapidExposureTimeEstimator::estimateExposureTime()
     // Average the exposure information for each patch
     // [TODO] Maybe use a more robust way to select an exposure time in the presence of severe noise
     double final_exp_estimate = e_estimate / nr_estimates;
-    
+
+    // Todo: this part is confusing...
     // Handle exposure time drift
     // If corrected images are highly over/underexposes, push exposure times
+    // Todo: change to use ref
     cv::Mat corrected_image = m_database->m_tracked_frames.at(m_database->m_tracked_frames.size()-1).m_image_corrected;
     cv::Mat original_image  = m_database->m_tracked_frames.at(m_database->m_tracked_frames.size()-1).m_image;
     corrected_image /= final_exp_estimate;

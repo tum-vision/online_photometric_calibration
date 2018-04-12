@@ -675,7 +675,8 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     double response_function[256];
     response_function[0] = 0;
     response_function[255] = 255;
-    
+
+    // Todo: 256 instead of 255?
     // For each response value i find s, such that inverse_response[s] = i
     for(int i=1;i<255;i++)
     {
@@ -690,6 +691,7 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     }
     
     //Setup a 256x256 mat to display inverse response + response
+    // Todo: change to class member
     cv::Mat response_vis_image(256,256,CV_8UC3,cv::Scalar(0,0,0));
     for(int i = 0;i < 256;i++)
     {
