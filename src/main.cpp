@@ -16,7 +16,7 @@
 using namespace std;
 
 // Optimization thread handle
-pthread_t opt_thread = NULL;
+pthread_t opt_thread = 0;
 
 // This variable indicates if currently an optimization task is running in a second thread
 pthread_mutex_t g_is_optimizing_mutex;
