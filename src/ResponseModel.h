@@ -14,7 +14,7 @@
 #include "StandardIncludes.h"
 
 /**
- * Represents data needed for the grossberg camera response model using the first 4 basis functions
+ * Represents data needed for the Grossberg camera response model using the first 4 basis functions
  */
 class ResponseModel
 {
@@ -24,7 +24,7 @@ public:
      * Constructor
      * 
      * Initialize response model with Grossberg parameters that correspond to identity response
-     * Also initialize discretely sampled inverse response vector for 256 output intensitiy values
+     * Also initialize discretely sampled inverse response vector for 256 output intensity values
      */
     ResponseModel()
     {
@@ -53,16 +53,15 @@ public:
     }
     
     /**
-     * Overwrite grossberberg parameter vector
+     * Overwrite Grossberg parameter vector
      */
-    // Todo: change parameter to ref
     void setGrossbergParameterVector(std::vector<double> params)
     {
         m_grossberg_parameters = params;
     }
     
     /**
-     * Fetch grossberg parameter vector
+     * Fetch Grossberg parameter vector
      */
     std::vector<double> getResponseEstimate()
     {
@@ -76,7 +75,7 @@ public:
     {
         for(int i = 0;i < 256;i++)
         {
-            m_inverse_response_vector.at(i) = 255*new_inverse[i];
+            m_inverse_response_vector.at(i) = 255.0 * new_inverse[i];
         }
     }
 
@@ -86,7 +85,7 @@ private:
      * Discrete vector of 256 values representing the sampled inverse camera response function
      * for the 256 image output intensities.
      * This vector is stored here for efficiency since it is not straightforward to invert the response 
-     * given only the grossberg parameters.
+     * given only the Grossberg parameters.
      */
     std::vector<double> m_inverse_response_vector;
     

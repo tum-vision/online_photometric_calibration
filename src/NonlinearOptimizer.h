@@ -141,7 +141,7 @@ private:
     OptimizationBlock* m_optimization_block;
     
     /**
-     * Compute photometric error O - f(eIL) for one point in one image
+     * Compute photometric error O - f(eVL) for one point in one image
      */
     double getResidualValue(double O,double I,double r,double e);
     
@@ -159,7 +159,7 @@ private:
     double applyResponse(double x);
     
     /**
-     * Evaluate the response function at radius r based on current estimate within the optimizer
+     * Evaluate the vignetting factor at radius r based on current estimate within the optimizer
      */
     double applyVignetting(double r);
     
@@ -168,7 +168,7 @@ private:
      */
     double getResidualErrorPoint(OptimizedPoint p,int r);
     
-    /*
+    /**
      * Determine the gamma factor that is needed to fix the current inverse response estimate at (x,y)
      */
     double determineGammaFixResponseAt(double* inverse_response,int x,double y);

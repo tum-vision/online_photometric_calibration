@@ -39,7 +39,11 @@ public:
      * @param point_status Vector indicating point validity (set to 0 by tracker if e.g. tracked patches leave input images)
      * @returns Exposure ratio estimate between frame_1 and frame_2 based on KLT optimization
      */
-    double trackImagePyramids(cv::Mat frame_1,cv::Mat frame_2,std::vector<cv::Point2f> pts_1,std::vector<cv::Point2f>& pts_2,std::vector<int>& point_status);
+    double trackImagePyramids(cv::Mat frame_1,
+                              cv::Mat frame_2,
+                              std::vector<cv::Point2f> pts_1,
+                              std::vector<cv::Point2f>& pts_2,
+                              std::vector<int>& point_status);
     
 private:
     
@@ -70,7 +74,11 @@ private:
      * @param output_points Tracked point locations in second input image
      * @returns Exposure ratio estimate between first and second input image
      */
-    double trackImageExposurePyr(cv::Mat old_image,cv::Mat new_image,std::vector<cv::Point2f> input_points,std::vector<cv::Point2f>& output_points,std::vector<int>& point_validity);
+    double trackImageExposurePyr(cv::Mat old_image,
+                                 cv::Mat new_image,
+                                 std::vector<cv::Point2f> input_points,
+                                 std::vector<cv::Point2f>& output_points,
+                                 std::vector<int>& point_validity);
 };
 
 #endif /* defined(__OnlineCalibration__GainRobustTracker__) */

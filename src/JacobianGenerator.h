@@ -22,7 +22,7 @@ public:
     JacobianGenerator();
     
     /**
-     * Initialize grossberg response parameters
+     * Initialize Grossberg response parameters
      */
     void setResponseParameters(std::vector<double> response_params)
     {
@@ -38,23 +38,23 @@ public:
     };
     
     /**
-     * Get the raw jacobian row to construct the hessian directly
+     * Get the raw Jacobian row to construct the hessian directly
      */
     void getRawJacobianRow(double I, double r, double e,std::vector<double>& j_res,std::vector<double>& j_vig,double& j_e,double& j_I);
     
     /**
-     * Apply the grossberg response to a value x
+     * Apply the Grossberg response to a value x
      */
     double applyGrossbergResponse(double x);
     
     /**
-     * Get the jacobian information, passing the irradiance, radius of the point and exposure time
+     * Get the Jacobian information, passing the irradiance, radius of the point and exposure time
      * of the image
      */
     void getJacobianRow_eca(double I, double r, double e,cv::Mat jacobian,int image_index,int residual_index);
     
     /**
-     * Get the jacobian entry for the irradiance
+     * Get the Jacobian entry for the irradiance
      */
     void getJacobianRadiance(double I,double r,double e, double& j_I);
     

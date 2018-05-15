@@ -49,7 +49,11 @@ void Tracker::trackNewFrame(cv::Mat input_image)
 
     GainRobustTracker gain_robust_klt_tracker(C_KLT_PATCH_SIZE,C_NR_PYRAMID_LEVELS);
     std::vector<int> tracked_point_status_int;
-    gain_robust_klt_tracker.trackImagePyramids(last_frame, input_image, feature_locations, tracked_points_new_frame, tracked_point_status_int);
+    gain_robust_klt_tracker.trackImagePyramids(last_frame,
+                                               input_image,
+                                               feature_locations,
+                                               tracked_points_new_frame,
+                                               tracked_point_status_int);
     for(int i = 0;i < tracked_point_status_int.size();i++)
     {
         if(tracked_point_status_int.at(i) == 0)
@@ -68,7 +72,11 @@ void Tracker::trackNewFrame(cv::Mat input_image)
     std::vector<float> tracking_error_values_backtracking;
     GainRobustTracker gain_robust_klt_tracker_2(C_KLT_PATCH_SIZE,C_NR_PYRAMID_LEVELS);
     std::vector<int> tracked_point_status_int2;
-    gain_robust_klt_tracker_2.trackImagePyramids(input_image,last_frame, tracked_points_new_frame, tracked_points_backtracking, tracked_point_status_int2);
+    gain_robust_klt_tracker_2.trackImagePyramids(input_image,
+                                                 last_frame,
+                                                 tracked_points_new_frame,
+                                                 tracked_points_backtracking,
+                                                 tracked_point_status_int2);
     for(int i = 0;i < tracked_point_status_int.size();i++)
     {
         if(tracked_point_status_int.at(i) == 0)
@@ -113,7 +121,7 @@ void Tracker::trackNewFrame(cv::Mat input_image)
     int nr_pushed_features = 0;
     for(int i = 0;i < feature_locations.size();i++)
     {
-        // If the feature became invalid dont do anything, otherwise if its still valid, push it to the database and set the feature pointers
+        // If the feature became invalid don't do anything, otherwise if its still valid, push it to the database and set the feature pointers
         if(tracked_point_status.at(i) == 0 || validity_vector.at(i) == 0)
             continue;
         
@@ -228,7 +236,10 @@ std::vector<cv::Point2f> Tracker::extractFeatures(cv::Mat frame,std::vector<cv::
             }
         }
     }
-    
+
+    // Todo: empty_col_indices might be 0!!!
+    // Todo: Another bad case is: only one cell is empty and all other cells have only 1 feature inside,
+    // Todo: then all the features to extract will be extracted from the single empty cell.
     int points_per_cell = ceil(nr_features_to_extract / (empty_col_indices.size()*1.0));
     
     // Extract "points per cell" features from each empty cell
@@ -272,7 +283,6 @@ std::vector<cv::Point2f> Tracker::extractFeatures(cv::Mat frame,std::vector<cv::
             
             new_features.push_back(point_location);
         }
-        
     }
     
     return new_features;
@@ -334,7 +344,7 @@ std::vector<int> Tracker::checkLocationValidity(std::vector<cv::Point2f> points)
     // Check for each passed point location if the patch centered around it falls completely within the input images
     // Return 0 for a point if not, 1 if yes
     
-    int min_x = m_patch_size+1;
+    int min_x = m_patch_size+1;  //Todo: should be m_patch_size?
     int min_y = m_patch_size+1;
     
     int max_x = m_database->m_image_width-m_patch_size-1;

@@ -20,7 +20,7 @@ public:
     
     /**
      * Constructor
-     * @param window_size Nuber of frames to use for exposure optimization
+     * @param window_size Number of frames to use for exposure optimization
      * @param database Handle to the database
      */
     RapidExposureTimeEstimator(int window_size,Database* database);

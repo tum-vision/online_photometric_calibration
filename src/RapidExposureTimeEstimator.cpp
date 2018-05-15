@@ -47,7 +47,8 @@ double RapidExposureTimeEstimator::estimateExposureTime()
         
         // Iterate the rest of the m_window_size features in the other images to accumulate radiance information
         Feature* curr_feature = features_last_frame.at(i)->m_prev_feature;
-        
+
+        // Todo: k should start from 1?
         for(int k = 0;k < m_window_size;k++)
         {
             // Go one feature backwards
