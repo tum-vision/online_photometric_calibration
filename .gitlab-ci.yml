@@ -1,0 +1,16 @@
+image: ubuntu:16.04
+
+compile:
+  stage: build
+  before_script:
+    - mkdir -p ccache
+    - export CCACHE_BASEDIR=${PWD}
+    - export CCACHE_DIR=${PWD}/ccache
+  cache:
+    paths:
+    - ccache/
+  script:
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - make -j3
