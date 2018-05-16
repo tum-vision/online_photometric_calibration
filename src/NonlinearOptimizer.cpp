@@ -330,6 +330,7 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
     double lm_dampening = 1.0;
 
     // Todo: are these the right LM iterations???
+    // Rui: may be because of the alternative optimization of evf and radiances, thus only one iteration in the evf GN.
     for(int round = 0;round < max_rounds;round++)
     {
         if(show_debug_prints)
@@ -854,7 +855,7 @@ void NonlinearOptimizer::getInverseResponseRaw(double* inverse_response_function
     inverse_response_function[0] = 0;
     inverse_response_function[255] = 1.0;
     
-    // For each inverse response value value i find s, such that response[s] = i
+    // For each inverse response value i find s, such that response[s] = i
     for(int i=1;i<255;i++)
     {
         bool inversion_found = false;
@@ -882,15 +883,13 @@ void NonlinearOptimizer::getInverseResponseRaw(double* inverse_response_function
 double NonlinearOptimizer::determineGammaFixResponseAt(double*inverse_response,int x,double y)
 {
     double v_y = inverse_response[x];
-    
     double gamma = log(y) / log(v_y);
-    
     return gamma;
 }
 
 void NonlinearOptimizer::smoothResponse()
 {
-    //get inverse response estimate, fixing the gamma value reasonably
+    // Get inverse response estimate, fixing the gamma value reasonably
     double inverse_response[256];
     double gamma = getInverseResponseFixGamma(inverse_response);
     
@@ -900,7 +899,7 @@ void NonlinearOptimizer::smoothResponse()
         inverse_response[i] = 255*inverse_response[i];
     }
     
-    //invert the inverse response to get the response again
+    // Invert the inverse response to get the response again
     double response_function[256];
     response_function[0] = 0;
     response_function[255] = 255;
@@ -918,7 +917,7 @@ void NonlinearOptimizer::smoothResponse()
         }
     }
     
-    // Fit the grossberg parameters new to the acquired data
+    // Fit the Grossberg parameters new to the acquired data
     JacobianGenerator generator;
     m_response_estimate = generator.fitGrossbergModelToResponseVector(response_function);
     
@@ -953,13 +952,14 @@ void NonlinearOptimizer::smoothResponse()
                 nr_bad_v++;
             }
         }
-        
+
+        // Todo: what is this? Why not using normal least square?
         double radius = r/100.0;
         double r2 = radius*radius;
         double r4 = r2*r2;
         double r6 = r4*r2;
         double r8 = r4*r4;
-        double r10 = r4*r4*r2;
+        double r10 = r6*r4;
         double r12 = r6*r6;
         
         LeftSide.at<double>(0,0) += w*r4;
@@ -979,7 +979,7 @@ void NonlinearOptimizer::smoothResponse()
     }
     
     cv::Mat Solution;
-    cv::solve(LeftSide, RightSide, Solution,cv::DECOMP_SVD);
+    cv::solve(LeftSide, RightSide, Solution, cv::DECOMP_SVD);
     
     std::vector<double> solution_vig;
     solution_vig.push_back(Solution.at<double>(0,0));
