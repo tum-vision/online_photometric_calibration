@@ -661,7 +661,10 @@ double NonlinearOptimizer::applyResponse(double x)
 void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
 {
     // Define an exponential factor here to scale response + vignette
-    double exponent = 1.0;
+    //double exponent = 1.0;
+    // To go through one point of the GT response of the TUM Mono camera
+    //double exponent = determineGammaFixResponseAt(inverse_response, 206, 0.5);
+    double exponent = determineGammaFixResponseAt(inverse_response, 148, 0.3);
     
     // Setup output image windows
     cv::namedWindow("Estimated Vignetting");
@@ -841,8 +844,6 @@ double NonlinearOptimizer::getInverseResponseFixGamma(double* inverse_response_f
 {
     getInverseResponseRaw(inverse_response_function);
     double gamma = determineGammaFixResponseAt(inverse_response_function, 127, 0.5);
-    // To go through one point of the GT response of the TUM Mono camera
-    //double gamma = determineGammaFixResponseAt(inverse_response_function, 200, 0.48);
     
     // Scale the inverse response
     for(int i = 0;i < 256;i++)
