@@ -5,12 +5,15 @@ cmake_minimum_required(VERSION 2.6)
 
 set(BUILD_TYPE Release)
 
+set(CMAKE_CXX_STANDARD 11)
+
 set(EXECUTABLE_OUTPUT_PATH bin)
 set(LIBRARY_OUTPUT_PATH lib)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Required libraries
 find_package(OpenCV 2.4 REQUIRED)
+find_package(Threads REQUIRED)
 
 # Source files
 set(ONLINE_CALIB_SOURCE_FILES
@@ -49,4 +52,5 @@ message("--- Compiling online_calib_demo.")
 add_executable(online_calib_demo ${PROJECT_SOURCE_DIR}/src/main.cpp)
 target_link_libraries(online_calib_demo
         online_calib
-        ${OpenCV_LIBS})
+        ${OpenCV_LIBS}
+        ${CMAKE_THREAD_LIBS_INIT})

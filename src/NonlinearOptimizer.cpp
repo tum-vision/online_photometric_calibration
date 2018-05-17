@@ -186,7 +186,7 @@ bool NonlinearOptimizer::extractOptimizationBlock()
     return true;
 }
 
-double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
+double NonlinearOptimizer::evfOptimization(bool show_debug_prints)
 {
     // Used for calculating first order derivatives, creating the Jacobian
     JacobianGenerator jacobian_generator;

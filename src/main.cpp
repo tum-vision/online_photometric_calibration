@@ -16,11 +16,70 @@
 using namespace std;
 
 // Optimization thread handle
-pthread_t opt_thread = NULL;
+pthread_t opt_thread = 0;
 
 // This variable indicates if currently an optimization task is running in a second thread
 pthread_mutex_t g_is_optimizing_mutex;
 bool g_is_optimizing = false;
+
+
+string image_folder;               // Image folder.
+
+int visualize_cnt       = 1;       // Visualize every visualize_cnt image (tracking + correction), rather slow.
+int start_image_index   = 0;       // Start image index.
+int end_image_index     = 100000;  // End image index.
+int image_width         = 640;     // Image width to resize to.
+int image_height        = 480;     // Image height to resize to.
+int nr_active_frames    = 200;     // Number of frames maintained in database.
+int tracker_patch_size  = 3;       // Image patch size used in tracker.
+int nr_active_features  = 200;     // Number of features maintained for each frame.
+int nr_pyramid_levels   = 2;       // Number of image pyramid levels used in tracker.
+int nr_images_rapid_exp = 15;      // Number of images for rapid exposure time estimation.
+int keyframe_spacing    = 15;      // Spacing for sampling keyframes in backend optimization.
+int min_keyframes_valid = 3;       // Minimum amount of keyframes a feature should be present to be included in optimization.
+
+void parseArgument(const char* arg)
+{
+    char buf[1000];
+    int value_int;
+
+    if(1 == sscanf(arg, "image_folder=%s", buf))
+    {
+        image_folder = buf;
+        printf("Loading images from %s!\n", image_folder.c_str());
+        return;
+    }
+
+    if(1 == sscanf(arg, "start_image_index=%d", &value_int))
+    {
+        start_image_index = value_int;
+        printf("Start at %d!\n", start_image_index);
+        return;
+    }
+
+    if(1 == sscanf(arg, "end_image_index=%d", &value_int))
+    {
+        end_image_index = value_int;
+        printf("End at %d!\n", end_image_index);
+        return;
+    }
+
+    if(1 == sscanf(arg, "image_width=%d", &value_int))
+    {
+        image_width = value_int;
+        printf("Image width %d!\n", image_width);
+        return;
+    }
+
+    if(1 == sscanf(arg, "image_height=%d", &value_int))
+    {
+        image_height = value_int;
+        printf("Image height %d!\n", image_height);
+        return;
+    }
+
+    printf("Could not parse argument \"%s\"!!!\n", arg);
+}
 
 void *run_optimization_task(void* thread_arg)
 {
@@ -30,13 +89,13 @@ void *run_optimization_task(void* thread_arg)
     g_is_optimizing = true;
     pthread_mutex_unlock(&g_is_optimizing_mutex);
     
-    // The nonlinear optimzer contains all the optimization information
+    // The nonlinear optimizer contains all the optimization information
     NonlinearOptimizer* optimizer = (NonlinearOptimizer*)thread_arg;
     
     optimizer->fetchResponseVignetteFromDatabase();
 
     // Perform optimization
-    optimizer->evfOptmization(false);
+    optimizer->evfOptimization(false);
     
     // Smooth optimization data
     optimizer->smoothResponse();
@@ -56,82 +115,43 @@ void *run_optimization_task(void* thread_arg)
 
 int main(int argc, const char * argv[])
 {
-    // Visualize every visualize_cnt image (tracking + correction)
-    // Visualization is rather slow, so disabling visualization increases fps a lot
-    int visualize_cnt = 1;
-    
-    int input_image_string_length = 5;
-    string input_image_file_extension = ".png";
-    
-    int start_image_index = 150;
-    int end_image_index = 3000;
-    int num_images = end_image_index - start_image_index + 1;
-    
-    // Resize the input images to the below width/height
-    int image_width = 640;
-    int image_height = 480;
-    
-    // Nr of frames to store inside the database (if more frames are in database, they will be dropped)
-    int nr_active_frames = 200;
-    
-    // Parametrize the tracker
-    int tracker_patch_size = 3;
-    int nr_active_features = 200;
-    int nr_pyramid_levels = 2;
-    
-    // Parametrization of the rapid exposure time estimator
-    int rapid_exp_images_to_optimize = 15;
-    
-    // Parametrization of the backend optimizer
-    int keyframe_spacing = 15;
-    int safe_zone_size = rapid_exp_images_to_optimize + 5;
-    int min_keyframes_valid = 3;
+    for(int i = 1; i < argc; i++)
+        parseArgument(argv[i]);
 
-    /**
-     * Set up the object to read new images from
-     */
-    ImageReader image_reader(input_image_string_length,
-                             input_image_file_extension,
-                             start_image_index,
-                             end_image_index,
-                             cv::Size(image_width,image_height));
-    
-    /**
-     * Set up the information database
-     */
+    int safe_zone_size = nr_images_rapid_exp + 5;
+
+    //  Set up the object to read new images from
+    ImageReader image_reader(image_folder, cv::Size(image_width,image_height));
+
+    // Set up the information database
     Database database(image_width,image_height);
-    
-    /**
-     * Setup the rapid  exposure time estimator
-     */
-    RapidExposureTimeEstimator exposure_estimator(rapid_exp_images_to_optimize,&database);
-    
-    /**
-     * Setup the nonlinear optimizer
-     */
+
+    // Setup the rapid  exposure time estimator
+    RapidExposureTimeEstimator exposure_estimator(nr_images_rapid_exp, &database);
+
+    // Setup the nonlinear optimizer
     NonlinearOptimizer backend_optimizer(keyframe_spacing,
                                          &database,
                                          safe_zone_size,
                                          min_keyframes_valid,
                                          tracker_patch_size);
-    
-    /**
-     * Set up the object that handles the tracking and receives new images, extracts features
-     */
+
+    // Set up the object that handles the tracking and receives new images, extracts features
     Tracker tracker(tracker_patch_size,nr_active_features,nr_pyramid_levels,&database);
     
     int optimize_cnt = 0;
+    int num_images = image_reader.getNumImages();
     
     // Run over all input images, track the new image, estimate exposure time and optimize other parameters in the background
-    for(int i = 0;i < num_images;i++)
+    for(int i = start_image_index; i < num_images && i < end_image_index; i++)
     {
         std::cout << "image: " << i << std::endl;
         
         // If enough images are in the database, remove once all initial images for which no exposure time could be optimized
         // Since those frames will not be that good for backend optimization
-        if(i == rapid_exp_images_to_optimize*2 + safe_zone_size)
+        if(i == nr_images_rapid_exp*2 + safe_zone_size)
         {
-            for(int i = 0;i < rapid_exp_images_to_optimize;i++)
+            for(int i = 0;i < nr_images_rapid_exp;i++)
             {
                 database.removeLastFrame();
             }
@@ -142,7 +162,7 @@ int main(int argc, const char * argv[])
             database.removeLastFrame();
         
         // Read next input image
-        cv::Mat new_image = image_reader.fetchNextImage();
+        cv::Mat new_image = image_reader.readImage(i);
         
         // Track input image (+ time the result)
         tracker.trackNewFrame(new_image);
@@ -179,7 +199,7 @@ int main(int argc, const char * argv[])
         // (1) Fetch the current optimization result and update database
         // (2) Try to extract a new optimization block and restart optimization in the background
         
-        // Fetch the old optimzation result from the optimizer, if available
+        // Fetch the old optimization result from the optimizer, if available
         if(optimize_cnt > 0)
         {
             // Write the result to the database, visualize the result
@@ -195,7 +215,7 @@ int main(int argc, const char * argv[])
         
         if(succeeded)
         {
-            //start a new optimzation task here
+            //start a new optimization task here
             pthread_create(&opt_thread, NULL, run_optimization_task, (void*)&backend_optimizer);
             optimize_cnt++;
         }
