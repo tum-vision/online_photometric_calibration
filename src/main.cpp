@@ -54,8 +54,8 @@ void *run_optimization_task(void* thread_arg)
     pthread_exit(NULL);
 }
 
-int main(int argc, const char * argv[]) {
-    
+int main(int argc, const char * argv[])
+{
     // Visualize every visualize_cnt image (tracking + correction)
     // Visualization is rather slow, so disabling visualization increases fps a lot
     int visualize_cnt = 1;

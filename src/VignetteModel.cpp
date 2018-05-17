@@ -40,8 +40,9 @@ double VignetteModel::getNormalizedRadius(cv::Point2f xy_location)
 double VignetteModel::getVignetteFactor(cv::Point2f xy_location)
 {
     double r = getNormalizedRadius(xy_location);
-    
-    double v = 1 + m_v1 * r * r + m_v2 * r*r*r*r + m_v3*r*r*r*r*r*r;
+    double r2 = r * r;
+    double r4 = r2 * r2;
+    double v = 1 + m_v1 * r2 + m_v2 * r4 + m_v3 * r2 * r4;
     
     return v;
 }
@@ -49,8 +50,9 @@ double VignetteModel::getVignetteFactor(cv::Point2f xy_location)
 double VignetteModel::getVignetteFactor(double norm_radius)
 {
     double r = norm_radius;
-    
-    double v = 1 + m_v1 * r * r + m_v2 * r*r*r*r + m_v3*r*r*r*r*r*r;
+    double r2 = r * r;
+    double r4 = r2 * r2;
+    double v = 1 + m_v1 * r2 + m_v2 * r4 + m_v3 * r2 * r4;
     
     return v;
 }

@@ -146,7 +146,7 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,
         
         double lambda = 0;
         double m = 0;
-        
+
         int absolute_point_index = -1;
         
         for(int p = 0;p < input_points.size();p++)
@@ -164,7 +164,7 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,
             // Bilinear image interpolation
             cv::Mat patch_intensities_1;
             cv::Mat patch_intensities_2;
-            int absolute_patch_size = ((m_patch_size+1)*2+1);
+            int absolute_patch_size = ((m_patch_size+1)*2+1);  // Todo: why m_patch_size+1?
             cv::getRectSubPix(new_image, cv::Size(absolute_patch_size,absolute_patch_size), output_points.at(p), patch_intensities_2,CV_32F);
             cv::getRectSubPix(old_image, cv::Size(absolute_patch_size,absolute_patch_size), input_points.at(p), patch_intensities_1,CV_32F);
             
@@ -223,7 +223,8 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,
             U_INV.at<double>(2*absolute_point_index,2*absolute_point_index+1) = U_INV_p.at<double>(0,1);
             U_INV.at<double>(2*absolute_point_index+1,2*absolute_point_index+1) = U_INV_p.at<double>(1,1);
         }
-        
+
+        // Todo: check if opencv utilizes the sparsity of U
         //solve for the exposure
         cv::Mat K_MAT;
         cv::solve(-W.t()*U_INV*W+lambda, -W.t()*U_INV*V+m, K_MAT);
@@ -243,7 +244,6 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,
             absolute_point_index++;
             
             cv::Mat U_p = Us.at(absolute_point_index);
-            
             cv::Mat V_p = V(cv::Rect(0,2*absolute_point_index,1,2));
             cv::Mat W_p = W(cv::Rect(0,2*absolute_point_index,1,2));
             
@@ -259,6 +259,7 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,
             int filter_margin = 2;
             double x = output_points.at(p).x;
             double y = output_points.at(p).y;
+            // Todo: the latter two should be ">=" ?
             if(x < filter_margin || y < filter_margin || x > image_cols-filter_margin || y > image_rows-filter_margin)
             {
                 point_validity.at(p) = 0;
@@ -266,7 +267,6 @@ double GainRobustTracker::trackImageExposurePyr(cv::Mat old_image,
         }
         
         K_total += K;
-        
     }
     
     return exp(K_total);

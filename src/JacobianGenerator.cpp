@@ -13,7 +13,13 @@ JacobianGenerator::JacobianGenerator()
     // Nothing to initialize
 }
 
-void JacobianGenerator::getRawJacobianRow(double I, double r, double e,std::vector<double>& j_res,std::vector<double>& j_vig,double& j_e,double& j_I)
+void JacobianGenerator::getRawJacobianRow(double I,
+                                          double r,
+                                          double e,
+                                          std::vector<double>& j_res,
+                                          std::vector<double>& j_vig,
+                                          double& j_e,
+                                          double& j_I)
 {
     j_res.clear();
     j_vig.clear();
@@ -22,22 +28,30 @@ void JacobianGenerator::getRawJacobianRow(double I, double r, double e,std::vect
     double a2 = m_vignetting_params.at(0);
     double a4 = m_vignetting_params.at(1);
     double a6 = m_vignetting_params.at(2);
-    double v  = 1 + a2*r*r + a4*r*r*r*r + a6*r*r*r*r*r*r;
+    double r2 = r * r;
+    double r4 = r2 * r2;
+    double r6 = r4 * r2;
+    double v  = 1 + a2*r2 + a4*r4 + a6*r6;
         
-    // Evaluate the grossberg base functions at the derivatives for the other derivatives
-    double h_0_d = evaluateGrossbergBaseFunction(0, true, e*I*v);
-    double h_1_d = evaluateGrossbergBaseFunction(1, true, e*I*v);
-    double h_2_d = evaluateGrossbergBaseFunction(2, true, e*I*v);
-    double h_3_d = evaluateGrossbergBaseFunction(3, true, e*I*v);
-    double h_4_d = evaluateGrossbergBaseFunction(4, true, e*I*v);
+    // Evaluate the Grossberg base functions at the derivatives for the other derivatives
+    double eIv = e * I * v;
+    double h_0_d = evaluateGrossbergBaseFunction(0, true, eIv);
+    double h_1_d = evaluateGrossbergBaseFunction(1, true, eIv);
+    double h_2_d = evaluateGrossbergBaseFunction(2, true, eIv);
+    double h_3_d = evaluateGrossbergBaseFunction(3, true, eIv);
+    double h_4_d = evaluateGrossbergBaseFunction(4, true, eIv);
         
-    double deriv_value = h_0_d + m_response_params.at(0)*h_1_d + m_response_params.at(1)*h_2_d + m_response_params.at(2)*h_3_d + m_response_params.at(3)*h_4_d;
+    double deriv_value = h_0_d +
+                         m_response_params.at(0)*h_1_d +
+                         m_response_params.at(1)*h_2_d +
+                         m_response_params.at(2)*h_3_d +
+                         m_response_params.at(3)*h_4_d;
     
-    // Derive by the 4 grossberg parameters
-    double j_res_1  = 255*evaluateGrossbergBaseFunction(1, false, e*I*v);
-    double j_res_2  = 255*evaluateGrossbergBaseFunction(2, false, e*I*v);
-    double j_res_3  = 255*evaluateGrossbergBaseFunction(3, false, e*I*v);
-    double j_res_4  = 255*evaluateGrossbergBaseFunction(4, false, e*I*v);
+    // Derive by the 4 Grossberg parameters
+    double j_res_1  = 255*evaluateGrossbergBaseFunction(1, false, eIv);
+    double j_res_2  = 255*evaluateGrossbergBaseFunction(2, false, eIv);
+    double j_res_3  = 255*evaluateGrossbergBaseFunction(3, false, eIv);
+    double j_res_4  = 255*evaluateGrossbergBaseFunction(4, false, eIv);
         
     j_res.push_back(j_res_1);
     j_res.push_back(j_res_2);
@@ -45,9 +59,9 @@ void JacobianGenerator::getRawJacobianRow(double I, double r, double e,std::vect
     j_res.push_back(j_res_4);
     
     // Derive by the 3 vignetting parameters
-    double j_vig_1 = 255 * deriv_value * e * I * r * r;
-    double j_vig_2 = 255 * deriv_value * e * I * r * r * r * r;
-    double j_vig_3 = 255 * deriv_value * e * I * r * r * r * r * r * r;
+    double j_vig_1 = 255 * deriv_value * e * I * r2;
+    double j_vig_2 = 255 * deriv_value * e * I * r4;
+    double j_vig_3 = 255 * deriv_value * e * I * r6;
     
     j_vig.push_back(j_vig_1);
     j_vig.push_back(j_vig_2);
@@ -61,33 +75,46 @@ void JacobianGenerator::getRawJacobianRow(double I, double r, double e,std::vect
     j_I = j_I_temp;
 }
 
-void JacobianGenerator::getJacobianRow_eca(double I, double r, double e,cv::Mat jacobian,int image_index,int residual_index)
+void JacobianGenerator::getJacobianRow_eca(double I,
+                                           double r,
+                                           double e,
+                                           cv::Mat jacobian,
+                                           int image_index,
+                                           int residual_index)
 {
     // Get the vignetting value
     double a2 = m_vignetting_params.at(0);
     double a4 = m_vignetting_params.at(1);
     double a6 = m_vignetting_params.at(2);
-    double v  = 1 + a2*r*r + a4*r*r*r*r + a6*r*r*r*r*r*r;
+    double r2 = r * r;
+    double r4 = r2 * r2;
+    double r6 = r4 * r2;
+    double v  = 1 + a2*r2 + a4*r4 + a6*r6;
         
-    // Evaluate the grossberg base functions at the derivatives for the other derivatives
-    double h_0_d = evaluateGrossbergBaseFunction(0, true, e*I*v);
-    double h_1_d = evaluateGrossbergBaseFunction(1, true, e*I*v);
-    double h_2_d = evaluateGrossbergBaseFunction(2, true, e*I*v);
-    double h_3_d = evaluateGrossbergBaseFunction(3, true, e*I*v);
-    double h_4_d = evaluateGrossbergBaseFunction(4, true, e*I*v);
-    
-    double deriv_value = h_0_d + m_response_params.at(0)*h_1_d + m_response_params.at(1)*h_2_d + m_response_params.at(2)*h_3_d + m_response_params.at(3)*h_4_d;
+    // Evaluate the grossberg base functions' derivatives for the other derivatives
+    double eIv = e * I * v;
+    double h_0_d = evaluateGrossbergBaseFunction(0, true, eIv);
+    double h_1_d = evaluateGrossbergBaseFunction(1, true, eIv);
+    double h_2_d = evaluateGrossbergBaseFunction(2, true, eIv);
+    double h_3_d = evaluateGrossbergBaseFunction(3, true, eIv);
+    double h_4_d = evaluateGrossbergBaseFunction(4, true, eIv);
+
+    double deriv_value = h_0_d +
+                         m_response_params.at(0)*h_1_d +
+                         m_response_params.at(1)*h_2_d +
+                         m_response_params.at(2)*h_3_d +
+                         m_response_params.at(3)*h_4_d;
         
-    // Derive by the 4 grossberg parameters
-    jacobian.at<double>(residual_index,0) = 255*evaluateGrossbergBaseFunction(1, false, e*I*v);
-    jacobian.at<double>(residual_index,1) = 255*evaluateGrossbergBaseFunction(2, false, e*I*v);
-    jacobian.at<double>(residual_index,2) = 255*evaluateGrossbergBaseFunction(3, false, e*I*v);
-    jacobian.at<double>(residual_index,3) = 255*evaluateGrossbergBaseFunction(4, false, e*I*v);
+    // Derive by the 4 Grossberg parameters
+    jacobian.at<double>(residual_index,0) = 255*evaluateGrossbergBaseFunction(1, false, eIv);
+    jacobian.at<double>(residual_index,1) = 255*evaluateGrossbergBaseFunction(2, false, eIv);
+    jacobian.at<double>(residual_index,2) = 255*evaluateGrossbergBaseFunction(3, false, eIv);
+    jacobian.at<double>(residual_index,3) = 255*evaluateGrossbergBaseFunction(4, false, eIv);
     
     // Derive by the 3 vignetting parameters
-    jacobian.at<double>(residual_index,4) = 255 * deriv_value * e * I * r * r;
-    jacobian.at<double>(residual_index,5) = 255 * deriv_value * e * I * r * r * r * r;
-    jacobian.at<double>(residual_index,6) = 255 * deriv_value * e * I * r * r * r * r * r * r;
+    jacobian.at<double>(residual_index,4) = 255 * deriv_value * e * I * r2;
+    jacobian.at<double>(residual_index,5) = 255 * deriv_value * e * I * r4;
+    jacobian.at<double>(residual_index,6) = 255 * deriv_value * e * I * r6;
         
     // Derive by exposure time
     jacobian.at<double>(residual_index,7+image_index) = 255 * deriv_value * (I*v);
@@ -100,16 +127,23 @@ void JacobianGenerator::getJacobianRadiance(double I,double r,double e,double& j
     double a6 = m_vignetting_params.at(2);
     
     // Get the vignetting value
-    double v  = 1 + a2*r*r + a4*r*r*r*r + a6*r*r*r*r*r*r;
+    double r2 = r * r;
+    double r4 = r2 * r2;
+    double r6 = r4 * r2;
+    double v  = 1 + a2*r2 + a4*r4 + a6*r6;
         
-    // Evaluate the grossberg base functions at the derivatives for the other derivatives
+    // Evaluate the Grossberg base functions' derivatives for the other derivatives
     double h_0_d = evaluateGrossbergBaseFunction(0, true, e*I*v);
     double h_1_d = evaluateGrossbergBaseFunction(1, true, e*I*v);
     double h_2_d = evaluateGrossbergBaseFunction(2, true, e*I*v);
     double h_3_d = evaluateGrossbergBaseFunction(3, true, e*I*v);
     double h_4_d = evaluateGrossbergBaseFunction(4, true, e*I*v);
         
-    double deriv_value = h_0_d + m_response_params.at(0)*h_1_d + m_response_params.at(1)*h_2_d + m_response_params.at(2)*h_3_d + m_response_params.at(3)*h_4_d;
+    double deriv_value = h_0_d +
+                         m_response_params.at(0)*h_1_d +
+                         m_response_params.at(1)*h_2_d +
+                         m_response_params.at(2)*h_3_d +
+                         m_response_params.at(3)*h_4_d;
     
     j_I = 255 * deriv_value * (e*v);
 }
@@ -205,7 +239,7 @@ double JacobianGenerator::applyGrossbergResponse(double x)
 
 std::vector<double> JacobianGenerator::fitGrossbergModelToResponseVector(double* response)
 {
-    // Given a response vector, find grossberg parameters that fit well
+    // Given a response vector, find Grossberg parameters that fit well
     cv::Mat LeftSide(4,4,CV_64F,0.0);
     cv::Mat RightSide(4,1,CV_64F,0.0);
     
@@ -220,8 +254,9 @@ std::vector<double> JacobianGenerator::fitGrossbergModelToResponseVector(double*
         double f2 = evaluateGrossbergBaseFunction(2, false, input);
         double f3 = evaluateGrossbergBaseFunction(3, false, input);
         double f4 = evaluateGrossbergBaseFunction(4, false, input);
-        
-        //for equation 1
+
+        // Todo: again, what is this?
+        // For equation 1
         LeftSide.at<double>(0,0) += f1*f1;
         LeftSide.at<double>(0,1) += f1*f2;
         LeftSide.at<double>(0,2) += f1*f3;
@@ -229,7 +264,7 @@ std::vector<double> JacobianGenerator::fitGrossbergModelToResponseVector(double*
         
         RightSide.at<double>(0,0) += (response[i]*f1 - f0*f1);
         
-        //for equation 2
+        // For equation 2
         LeftSide.at<double>(1,0) += f2*f1;
         LeftSide.at<double>(1,1) += f2*f2;
         LeftSide.at<double>(1,2) += f2*f3;
@@ -237,7 +272,7 @@ std::vector<double> JacobianGenerator::fitGrossbergModelToResponseVector(double*
         
         RightSide.at<double>(1,0) += (response[i]*f2 - f0*f2);
         
-        //for equation 3
+        // For equation 3
         LeftSide.at<double>(2,0) += f3*f1;
         LeftSide.at<double>(2,1) += f3*f2;
         LeftSide.at<double>(2,2) += f3*f3;
@@ -245,7 +280,7 @@ std::vector<double> JacobianGenerator::fitGrossbergModelToResponseVector(double*
         
         RightSide.at<double>(2,0) += (response[i]*f3 - f0*f3);
         
-        //for equation 4
+        // For equation 4
         LeftSide.at<double>(3,0) += f4*f1;
         LeftSide.at<double>(3,1) += f4*f2;
         LeftSide.at<double>(3,2) += f4*f3;

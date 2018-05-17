@@ -8,7 +8,11 @@
 
 #include "NonlinearOptimizer.h"
 
-NonlinearOptimizer::NonlinearOptimizer(int keyframe_spacing,Database* database,int safe_zone_size,int min_keyframes_valid,int patch_size)
+NonlinearOptimizer::NonlinearOptimizer(int keyframe_spacing,
+                                       Database* database,
+                                       int safe_zone_size,
+                                       int min_keyframes_valid,
+                                       int patch_size)
 {
     // Initialize object parameters with passed values
     m_keyframe_spacing = keyframe_spacing;
@@ -29,6 +33,7 @@ bool NonlinearOptimizer::extractOptimizationBlock()
     int nr_images_in_database = static_cast<int>(m_database->m_tracked_frames.size());
 
     // Not enough images in the database yet -> extraction fails
+    // Todo: why 2 times?
     if(nr_images_in_database < 2*(m_keyframe_spacing*m_min_keyframes_valid)+m_safe_zone_size)
     {
         return false;
@@ -62,11 +67,12 @@ bool NonlinearOptimizer::extractOptimizationBlock()
         }
         
         // Get all features in the current keyframe and iterate them
+        // Todo: change features to pointer?
         std::vector<Feature*> features = m_database->m_tracked_frames.at(i).m_features;
         
         for(int p = 0;p < features.size();p++)
         {
-            // Skip features that are not new, dont attempt at creating a new optimization point
+            // Skip features that are not new, don't attempt at creating a new optimization point
             if(features.at(p)->m_prev_feature != NULL)
                 continue;
             
@@ -182,7 +188,7 @@ bool NonlinearOptimizer::extractOptimizationBlock()
 
 double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
 {
-    // Used for calculating first order derivatives, creating the jacobian
+    // Used for calculating first order derivatives, creating the Jacobian
     JacobianGenerator jacobian_generator;
     jacobian_generator.setResponseParameters(m_response_estimate);
     jacobian_generator.setVignettingParameters(m_vignette_estimate);
@@ -191,17 +197,17 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
     int points_per_patch = pow(2*m_patch_size+1,2);
     int num_residuals = m_optimization_block->getNrResiduals();
     
-    // Number of paramters to optimize for (4 response, 3 vignette + exposure times)
+    // Number of parameters to optimize for (4 response, 3 vignette + exposure times)
     int num_parameters = C_NR_RESPONSE_PARAMS + C_NR_VIGNETTE_PARAMS + m_optimization_block->getNrImages();
     
-    // Initialize empty matrices for the jacobian and the residual vector
+    // Initialize empty matrices for the Jacobian and the residual vector
     cv::Mat Jacobian(num_residuals,num_parameters,CV_64F,0.0);
     cv::Mat Residuals(num_residuals,1,CV_64F,0.0);
     
-    // Weight matrix for the jacobian
+    // Weight matrix for the Jacobian
     cv::Mat Weights_Jacobian(num_residuals,num_parameters,CV_64F,0.0);
     
-    // Fill the jacobian
+    // Fill the Jacobian
     int residual_id = -1;
     double residual_sum = 0;
     int overall_image_index = 0;
@@ -230,7 +236,7 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
                 double radiance = points_to_optimize->at(p).radiances.at(r);
                 double o_value    = points_to_optimize->at(p).output_intensities.at(i).at(r);
                 
-                // Avoid I = 0 which leads to NaN errors in the jacobian, also ignore implausible radiance estimates much larger than 1
+                // Avoid I = 0 which leads to NaN errors in the Jacobian, also ignore implausible radiance estimates much larger than 1
                 if(radiance < 0.001 || radiance > 1.1)
                     continue;
                 if(radiance > 1)
@@ -239,8 +245,13 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
                 // Count the actual number of residuals up
                 residual_id++;
                 
-                // Fill the jacobian row
-                jacobian_generator.getJacobianRow_eca(radiance, radius, exposure, Jacobian, overall_image_index + image_start_index + i, residual_id);
+                // Fill the Jacobian row
+                jacobian_generator.getJacobianRow_eca(radiance,
+                                                      radius,
+                                                      exposure,
+                                                      Jacobian,
+                                                      overall_image_index + image_start_index + i,
+                                                      residual_id);
                 
                 // For debugging
                 /*if(show_debug_prints)
@@ -264,7 +275,7 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
                     Weights_Jacobian.at<double>(residual_id,k) = grad_weight;
                 }
                     
-                // Fill the residal vector
+                // Fill the residual vector
                 double residual = getResidualValue(o_value, radiance, radius, exposure);
                 Residuals.at<double>(residual_id,0) = grad_weight * residual;
                 
@@ -277,18 +288,18 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
     
     int real_number_of_residuals = residual_id+1;
     
-    // Get only the relevant part of the jacobian (actual number of residuals)
+    // Get only the relevant part of the Jacobian (actual number of residuals)
     Jacobian = Jacobian(cv::Rect(0,0,num_parameters,real_number_of_residuals));
     Weights_Jacobian = Weights_Jacobian(cv::Rect(0,0,num_parameters,real_number_of_residuals));
     Residuals = Residuals(cv::Rect(0,0,1,real_number_of_residuals));
     
-    // Transpose the jacobian, calculate J^T * W *J * X = - J^T * W * r
+    // Transpose the Jacobian, calculate J^T * W *J * X = - J^T * W * r
     cv::Mat Jacobian_T;
     cv::transpose(Jacobian, Jacobian_T);
     
     cv::Mat A = Jacobian_T* (Weights_Jacobian.mul(Jacobian));
     //cv::Mat A = Jacobian.t()*Jacobian;
-    cv::Mat b = - Jacobian.t() * Residuals;
+    cv::Mat b = - Jacobian.t() * Residuals; // Todo: reuse Jacobian_T to save time?
     
     // Get the current residual before optimization in order to compare progress
     double total_error, avg_error;
@@ -297,12 +308,12 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
     if(show_debug_prints)
         std::cout << "Error before ECA adjustment: total: " << total_error << " avg: " << avg_error << std::endl;
     
-    // Prepare identity matrix for levenberg marquardt dampening
+    // Prepare identity matrix for Levenberg-Marquardt damping
     cv::Mat Identity = cv::Mat::eye(num_parameters, num_parameters, CV_64F);
     Identity = Identity.mul(A);
     
     // Backup photometric parameters in order to revert if update is not good
-    std::vector<double> respose_param_backup    = m_response_estimate;
+    std::vector<double> response_param_backup    = m_response_estimate;
     std::vector<double> vignetting_param_backup = m_vignette_estimate;
     std::vector<double> exp_backups;
     for(int i = 0;i < m_optimization_block->getNrImages();i++)
@@ -311,30 +322,33 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
     }
     
     // Perform update steps
-    int max_rounds = 6;
+    int max_rounds = 6; // Todo: change this to const class member
     cv::Mat BestStateUpdate(num_parameters,1,CV_64F,0.0);
     double current_best_error = total_error;
     
     double lambda = 1.0f;
     double lm_dampening = 1.0;
-    
+
+    // Todo: are these the right LM iterations???
+    // Rui: may be because of the alternative optimization of evf and radiances, thus only one iteration in the evf GN.
     for(int round = 0;round < max_rounds;round++)
     {
         if(show_debug_prints)
-            std::cout << "ECA Optimiziation round with dampening = " << lm_dampening << std::endl;
+            std::cout << "ECA Optimization round with dampening = " << lm_dampening << std::endl;
         
         //solve the linear equation system
         cv::Mat State_Update;
 
         lambda = 1.0;
   
-        // Solve state update equation (+LM dampening)
+        // Solve state update equation (+LM damping)
+        // Todo: reuse Jacobian_T to save time?
         State_Update = - (Jacobian.t()* Weights_Jacobian.mul(Jacobian) + lm_dampening*Identity).inv(cv::DECOMP_SVD)*(Jacobian.t()*Residuals);
         
         // Update the estimated parameters
         for(int k = 0;k < m_response_estimate.size();k++)
         {
-            m_response_estimate.at(k) = respose_param_backup.at(k) + lambda * State_Update.at<double>(k,0);
+            m_response_estimate.at(k) = response_param_backup.at(k) + lambda * State_Update.at<double>(k,0);
         }
         
         for(int k = 0;k < m_vignette_estimate.size();k++)
@@ -346,7 +360,7 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
         for(int i = 0;i < m_optimization_block->getNrImages();i++)
         {
             double new_exp_time = exp_backups.at(i) + lambda*State_Update.at<double>((int)m_response_estimate.size()+(int)m_vignette_estimate.size()+abs_image_index,0);
-                m_optimization_block->setExposureTime(i,new_exp_time);
+            m_optimization_block->setExposureTime(i,new_exp_time);
             abs_image_index++;
         }
         
@@ -360,13 +374,12 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
         // Improvement?
         if(current_error < current_best_error)
         {
-            //increase dampening factor, reperform
+            //increase damping factor, re-perform
             if(lm_dampening >= 0.0625)
                 lm_dampening /= 2.0f;
             
             current_best_error = current_error;
             BestStateUpdate = State_Update;
-            
         }
         else
         {
@@ -377,18 +390,17 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
             else
             {
                 if(show_debug_prints)
-                    std::cout << "MAX DAMPENING REACHED, BREAK EARLY " << std::endl;
+                    std::cout << "MAX DAMPING REACHED, BREAK EARLY " << std::endl;
                 break;
             }
         }
-        
     }
     
     // Apply the best of the found state updates
     
     for(int k = 0;k < m_response_estimate.size();k++)
     {
-        m_response_estimate.at(k) = respose_param_backup.at(k) + lambda * BestStateUpdate.at<double>(k,0);
+        m_response_estimate.at(k) = response_param_backup.at(k) + lambda * BestStateUpdate.at<double>(k,0);
     }
     
     for(int k = 0;k < m_vignette_estimate.size();k++)
@@ -431,7 +443,6 @@ double NonlinearOptimizer::getResidualValue(double O, double I, double r, double
     
     // Argument of response function
     double inside = e*I*vignetting;
-    
     double response_value;
     
     // Apply response function
@@ -457,9 +468,7 @@ double NonlinearOptimizer::getResidualValue(double O, double I, double r, double
 void NonlinearOptimizer::getTotalResidualError(double& total_error,double& avg_error)
 {
     int residual_id = -1;
-    
     double residual_sum = 0;
-    
     int points_per_patch = pow(2*m_patch_size+1,2);
     
     std::vector<OptimizedPoint>* points_to_optimize = m_optimization_block->getOptimizedPoints();
@@ -467,7 +476,6 @@ void NonlinearOptimizer::getTotalResidualError(double& total_error,double& avg_e
     // Iterate all tracked points
     for(int p = 0;p < points_to_optimize->size();p++)
     {
-            
         int image_start_index = points_to_optimize->at(p).start_image_idx;
         int nr_images         = points_to_optimize->at(p).num_images_valid;
         
@@ -475,7 +483,6 @@ void NonlinearOptimizer::getTotalResidualError(double& total_error,double& avg_e
         for(int i = 0;i < nr_images;i++)
         {
             double radius = points_to_optimize->at(p).radii.at(i);
-                
             double exposure = m_optimization_block->getExposureTime(image_start_index+i);
                 
             // Iterate all the points in the patch
@@ -499,12 +506,10 @@ void NonlinearOptimizer::getTotalResidualError(double& total_error,double& avg_e
                 // Accumulate resdiual values
                 residual_sum += residual_weight*std::abs(residual);
             }
-            
         }
-        
     }
     
-    // Average reidual error
+    // Average residual error
     total_error = residual_sum;
     avg_error   = total_error/(residual_id+1);
 }
@@ -536,10 +541,8 @@ double NonlinearOptimizer::radianceFullOptimization()
         for(int r = 0;r < nr_patch_points;r++)
         {
             double radiance_guess = points_to_optimize->at(p).radiances.at(r);
-            
             double left_side_sum = 0;
             double right_side_sum = 0;
-                
             double initialResidualError = getResidualErrorPoint(points_to_optimize->at(p),r);
             
             // Iterate all images
@@ -550,16 +553,15 @@ double NonlinearOptimizer::radianceFullOptimization()
                 double output_value = points_to_optimize->at(p).output_intensities.at(i).at(r);
                     
                 // Get the jacobian value
-                double jacobian_I_vaue;
-                jacobian_generator.getJacobianRadiance(radiance_guess, radius, exposure, jacobian_I_vaue);
-                jacobian_I_vaue *= 255;
+                double jacobian_I_value;
+                jacobian_generator.getJacobianRadiance(radiance_guess, radius, exposure, jacobian_I_value);
+                jacobian_I_value *= 255;
                     
                 // Get the residual value
                 double residual = getResidualValue(output_value, radiance_guess, radius, exposure);
                     
-                left_side_sum += (jacobian_I_vaue*jacobian_I_vaue);
-                right_side_sum += (jacobian_I_vaue*residual);
-                
+                left_side_sum += (jacobian_I_value*jacobian_I_value);
+                right_side_sum += (jacobian_I_value*residual);
             }
             
             // Update radiance estimate
@@ -567,28 +569,32 @@ double NonlinearOptimizer::radianceFullOptimization()
             double new_error = initialResidualError+1;
             int max_iterations = 10;
             int curr_iteration = 0;
+
             while(new_error > initialResidualError)
             {
                 if(curr_iteration == max_iterations)
                 {
                     lambda = 0;
                 }
-                    
+
+                // Todo: change to use a local variable
                 points_to_optimize->at(p).radiances.at(r) = radiance_guess - lambda * (right_side_sum/left_side_sum);
                 if(points_to_optimize->at(p).radiances.at(r) < 0.001)
                 { 
                     points_to_optimize->at(p).radiances.at(r) = 0.001;
                 }
                 if(points_to_optimize->at(p).radiances.at(r) > 0.999)
+                {
                     points_to_optimize->at(p).radiances.at(r) = 0.999;
+                }
                     
-                lambda /= 2;
+                lambda /= 2; // Todo: to justify this in literature
                 curr_iteration++;
                     
                 if(lambda < 0.001)
                     break;
+
                 new_error = getResidualErrorPoint(points_to_optimize->at(p), r);
-                
             }
         }
     }
@@ -603,20 +609,15 @@ double NonlinearOptimizer::getResidualErrorPoint(OptimizedPoint p,int r)
 {
     int start_image = p.start_image_idx;
     int num_images  = p.num_images_valid;
-    
     double radiance_guess = p.radiances.at(r);
-    
     double totalError = 0;
     
     for(int i = 0;i < num_images;i++)
     {
         double radius = p.radii.at(i);
         double output_value = p.output_intensities.at(i).at(r);
-        
         double exposure = m_optimization_block->getExposureTime(start_image+i);
-        
         double residual = getResidualValue(output_value, radiance_guess, radius, exposure);
-        
         totalError += std::abs(residual);
     }
     
@@ -676,7 +677,6 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     response_function[0] = 0;
     response_function[255] = 255;
 
-    // Todo: 256 instead of 255?
     // For each response value i find s, such that inverse_response[s] = i
     for(int i=1;i<255;i++)
     {
@@ -855,7 +855,7 @@ void NonlinearOptimizer::getInverseResponseRaw(double* inverse_response_function
     inverse_response_function[0] = 0;
     inverse_response_function[255] = 1.0;
     
-    // For each inverse response value value i find s, such that response[s] = i
+    // For each inverse response value i find s, such that response[s] = i
     for(int i=1;i<255;i++)
     {
         bool inversion_found = false;
@@ -883,15 +883,13 @@ void NonlinearOptimizer::getInverseResponseRaw(double* inverse_response_function
 double NonlinearOptimizer::determineGammaFixResponseAt(double*inverse_response,int x,double y)
 {
     double v_y = inverse_response[x];
-    
     double gamma = log(y) / log(v_y);
-    
     return gamma;
 }
 
 void NonlinearOptimizer::smoothResponse()
 {
-    //get inverse response estimate, fixing the gamma value reasonably
+    // Get inverse response estimate, fixing the gamma value reasonably
     double inverse_response[256];
     double gamma = getInverseResponseFixGamma(inverse_response);
     
@@ -901,7 +899,7 @@ void NonlinearOptimizer::smoothResponse()
         inverse_response[i] = 255*inverse_response[i];
     }
     
-    //invert the inverse response to get the response again
+    // Invert the inverse response to get the response again
     double response_function[256];
     response_function[0] = 0;
     response_function[255] = 255;
@@ -919,7 +917,7 @@ void NonlinearOptimizer::smoothResponse()
         }
     }
     
-    // Fit the grossberg parameters new to the acquired data
+    // Fit the Grossberg parameters new to the acquired data
     JacobianGenerator generator;
     m_response_estimate = generator.fitGrossbergModelToResponseVector(response_function);
     
@@ -954,13 +952,14 @@ void NonlinearOptimizer::smoothResponse()
                 nr_bad_v++;
             }
         }
-        
+
+        // Todo: what is this? Why not using normal least square?
         double radius = r/100.0;
         double r2 = radius*radius;
         double r4 = r2*r2;
         double r6 = r4*r2;
         double r8 = r4*r4;
-        double r10 = r4*r4*r2;
+        double r10 = r6*r4;
         double r12 = r6*r6;
         
         LeftSide.at<double>(0,0) += w*r4;
@@ -980,7 +979,7 @@ void NonlinearOptimizer::smoothResponse()
     }
     
     cv::Mat Solution;
-    cv::solve(LeftSide, RightSide, Solution,cv::DECOMP_SVD);
+    cv::solve(LeftSide, RightSide, Solution, cv::DECOMP_SVD);
     
     std::vector<double> solution_vig;
     solution_vig.push_back(Solution.at<double>(0,0));

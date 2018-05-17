@@ -65,6 +65,7 @@ public:
      * Extract new features if necessary
      * Filter out spurious tracks
      */
+     // Todo: change param to reference
     void trackNewFrame(cv::Mat frame);
     
 private:
@@ -93,16 +94,19 @@ private:
     /**
      * Extract new features from the frame
      */
+    // Todo: change param to reference
     std::vector<cv::Point2f> extractFeatures(cv::Mat frame,std::vector<cv::Point2f> old_features);
     
     /**
      * Bilinear interpolation, evaluate image at floating point location (x,y)
      */
+    // Todo: change param to reference
     double bilinearInterpolateImage(cv::Mat image,double x,double y);
     
     /**
      * Evaluate entire image patch at floating point location (x,y)
      */
+    // Todo: change param to reference
     std::vector<double> bilinearInterpolateImagePatch(cv::Mat image,double x,double y);
     
     /**
@@ -113,11 +117,13 @@ private:
     /**
      * Extract features for the first time
      */
+    // Todo: change param to reference
     void initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_image);
     
     /**
      * Compute gradient image
      */
+    // Todo: change param to reference
     void computeGradientImage(cv::Mat input_image,cv::Mat &gradient_image);
     
     /**
