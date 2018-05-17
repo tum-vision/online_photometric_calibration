@@ -151,7 +151,7 @@ int main(int argc, const char * argv[])
         // Since those frames will not be that good for backend optimization
         if(i == nr_images_rapid_exp*2 + safe_zone_size)
         {
-            for(int i = 0;i < nr_images_rapid_exp;i++)
+            for(int ii = 0;ii < nr_images_rapid_exp;ii++)
             {
                 database.removeLastFrame();
             }

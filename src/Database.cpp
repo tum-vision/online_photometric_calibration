@@ -12,7 +12,8 @@
  * Initialize vignette model with some vignetting
  */
 Database::Database(int image_width,int image_height) :
-    m_vignette_estimate(-0.6,0,0,image_width,image_height),
+    //m_vignette_estimate(-0.6,0,0,image_width,image_height),
+    m_vignette_estimate(0,0,0,image_width,image_height),
     m_response_estimate()
 {
     m_image_width  = image_width;
