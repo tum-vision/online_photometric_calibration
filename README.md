@@ -98,5 +98,17 @@ sudo make install
 
 ## License
 
-You may use this project under a BSD 3-Clause license.
+This project was orginally developed at the [TUM computer vision
+group](https://vision.in.tum.de) in 2017 by Paul Bergmann.
+
+Later contributions were made by [Rui Wang](https://vision.in.tum.de/members/wangr) and [Nikolaus Demmel](https://vision.in.tum.de/members/demmeln).
+
+This project is available under a BSD 3-Clause license.
 See [LICENSE.txt](LICENSE.txt)
+
+Among others, we make use of the following libraries:
+
+ * OpenCV ([BSD](https://opencv.org/license.html))
+ * CLI11 ([BSD](https://github.com/CLIUtils/CLI11/blob/master/LICENSE))
+
+
