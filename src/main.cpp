@@ -91,6 +91,8 @@ int main(int argc, char** argv)
     app.add_option("--image-width", image_width, "Resize image to this witdth.");
     app.add_option("--image-height", image_width, "Resize image to this height.");
 
+    CLI11_PARSE(app, argc, argv);
+
     // TODO: print whole configuration (add to setting struct)
 
     printf("Loading images from '%s'\n", image_folder.c_str());
@@ -99,7 +101,6 @@ int main(int argc, char** argv)
     printf("Image width %d\n", image_width);
     printf("Image height %d\n", image_height);
 
-    CLI11_PARSE(app, argc, argv);
 
     int safe_zone_size = nr_images_rapid_exp + 5;
 
