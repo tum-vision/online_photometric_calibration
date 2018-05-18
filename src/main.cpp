@@ -12,6 +12,7 @@
 #include "RapidExposureTimeEstimator.h"
 #include "Database.h"
 #include "NonlinearOptimizer.h"
+#include "CLI11.hpp"
 
 using namespace std;
 
@@ -23,59 +24,12 @@ pthread_mutex_t g_is_optimizing_mutex;
 bool g_is_optimizing = false;
 
 
-string image_folder;               // Image folder.
-
-int visualize_cnt       = 1;       // Visualize every visualize_cnt image (tracking + correction), rather slow.
-int start_image_index   = 0;       // Start image index.
-int end_image_index     = 100000;  // End image index.
-int image_width         = 640;     // Image width to resize to.
-int image_height        = 480;     // Image height to resize to.
-int nr_active_frames    = 200;     // Number of frames maintained in database.
-int tracker_patch_size  = 3;       // Image patch size used in tracker.
-int nr_active_features  = 200;     // Number of features maintained for each frame.
-int nr_pyramid_levels   = 2;       // Number of image pyramid levels used in tracker.
-int nr_images_rapid_exp = 15;      // Number of images for rapid exposure time estimation.
-int keyframe_spacing    = 15;      // Spacing for sampling keyframes in backend optimization.
-int min_keyframes_valid = 3;       // Minimum amount of keyframes a feature should be present to be included in optimization.
-
 void parseArgument(const char* arg)
 {
     char buf[1000];
     int value_int;
 
-    if(1 == sscanf(arg, "image_folder=%s", buf))
-    {
-        image_folder = buf;
-        printf("Loading images from %s!\n", image_folder.c_str());
-        return;
-    }
 
-    if(1 == sscanf(arg, "start_image_index=%d", &value_int))
-    {
-        start_image_index = value_int;
-        printf("Start at %d!\n", start_image_index);
-        return;
-    }
-
-    if(1 == sscanf(arg, "end_image_index=%d", &value_int))
-    {
-        end_image_index = value_int;
-        printf("End at %d!\n", end_image_index);
-        return;
-    }
-
-    if(1 == sscanf(arg, "image_width=%d", &value_int))
-    {
-        image_width = value_int;
-        printf("Image width %d!\n", image_width);
-        return;
-    }
-
-    if(1 == sscanf(arg, "image_height=%d", &value_int))
-    {
-        image_height = value_int;
-        printf("Image height %d!\n", image_height);
-        return;
     }
 
     printf("Could not parse argument \"%s\"!!!\n", arg);
@@ -115,6 +69,50 @@ void *run_optimization_task(void* thread_arg)
 
 int main(int argc, const char * argv[])
 {
+    // TODO: move to settings struct
+
+    string image_folder("images");     // Image folder.
+
+    int visualize_cnt       = 1;       // Visualize every visualize_cnt image (tracking + correction), rather slow.
+    int start_image_index   = 0;       // Start image index.
+    int end_image_index     = 100000;  // End image index.
+    int image_width         = 640;     // Image width to resize to.
+    int image_height        = 480;     // Image height to resize to.
+    int nr_active_frames    = 200;     // Number of frames maintained in database.
+    int tracker_patch_size  = 3;       // Image patch size used in tracker.
+    int nr_active_features  = 200;     // Number of features maintained for each frame.
+    int nr_pyramid_levels   = 2;       // Number of image pyramid levels used in tracker.
+    int nr_images_rapid_exp = 15;      // Number of images for rapid exposure time estimation.
+    int keyframe_spacing    = 15;      // Spacing for sampling keyframes in backend optimization.
+    int min_keyframes_valid = 3;       // Minimum amount of keyframes a feature should be present to be included in optimization.
+
+    CLI::App app{"Online Photometric Calibration"};
+
+    app.add_option("-i,--image-folder", image_folder, "Folder with image files to read.");
+    app.add_option("--start-image-index", start_image_index, "Start reading from this image index.");
+
+
+
+
+
+        printf("Loading images from %s!\n", image_folder.c_str());
+
+    if(1 == sscanf(arg, "start_image_index=%d", &value_int))
+        printf("Start at %d!\n", start_image_index);
+
+    if(1 == sscanf(arg, "end_image_index=%d", &value_int))
+        printf("End at %d!\n", end_image_index);
+
+    if(1 == sscanf(arg, "image_width=%d", &value_int))
+        printf("Image width %d!\n", image_width);
+
+    if(1 == sscanf(arg, "image_height=%d", &value_int))
+        printf("Image height %d!\n", image_height);
+
+    CLI11_PARSE(app, argc, argv);
+
+
+
     for(int i = 1; i < argc; i++)
         parseArgument(argv[i]);
 

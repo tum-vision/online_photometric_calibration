@@ -61,7 +61,7 @@ set(ONLINE_CALIB_SOURCE_FILES
 
 # add include files to custom target so they show up in IDEs like
 # QtCreator in the project view
-file(GLOB_RECURSE _INCLUDE_FILES "src/*.h")
+file(GLOB_RECURSE _INCLUDE_FILES "src/*.h" "src/*.hpp")
 add_custom_target(_include_files_fix_target SOURCES ${_INCLUDE_FILES})
 
 # main library
