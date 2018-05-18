@@ -14,19 +14,19 @@
     - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
     - make -j3
 
-compile-debug-16.04:
+debug-16.04:
   image: nikolausdemmel/ubuntu-dev-base:16.04
   variables:
     BUILD_TYPE: Release
   <<: *compile_definition
 
-compile-release-16.04:
+release-16.04:
   image: nikolausdemmel/ubuntu-dev-base:16.04
   variables:
     BUILD_TYPE: Debug
   <<: *compile_definition
 
-compile-release-14.04:
+release-14.04:
   image: nikolausdemmel/ubuntu-dev-base:14.04
   variables:
     BUILD_TYPE: Release
