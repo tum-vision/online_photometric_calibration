@@ -30,8 +30,8 @@ release-14.04:
   image: nikolausdemmel/ubuntu-dev-base:14.04
   variables:
     BUILD_TYPE: Release
-    CC=/usr/lib/ccache/gcc
-    CXX=/usr/lib/ccache/g++
+    CC: /usr/lib/ccache/gcc
+    CXX: /usr/lib/ccache/g++
   <<: *compile_definition
 
 
