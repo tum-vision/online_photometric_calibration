@@ -23,7 +23,8 @@ fashion in realtime. For more details please refer to our paper.
 If you use this code in your research, we would appreciate if you cite
 the respective publication.
 
-**Online Photometric Calibration of Auto Exposure Video for Realtime Visual Odometry and SLAM** (P. Bergmann, R. Wang, D. Cremers), /In IEEE Robotics and Automation Letters (RA-L)/, volume 3, 2018. [pdf](https://vision.in.tum.de/_media/spezial/bib/bergmann17calibration.pdf) [video](https://youtu.be/nQHMG0c6Iew)
+**Online Photometric Calibration of Auto Exposure Video for Realtime Visual Odometry and SLAM** (P. Bergmann, R. Wang, D. Cremers),<br/>
+*In IEEE Robotics and Automation Letters (RA-L)*, volume 3, 2018. [[pdf](https://vision.in.tum.de/_media/spezial/bib/bergmann17calibration.pdf)] [[video](https://youtu.be/nQHMG0c6Iew)]
 
 For more information, see also
 https://vision.in.tum.de/research/vslam/photometric-calibration.
