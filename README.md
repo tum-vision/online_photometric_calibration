@@ -65,6 +65,9 @@ sudo apt-get install \
 
 CCache can help you speed up repeated builds.
 
+*Note:* You need at least cmake version 3.4 for ccache to work
+ automatically.
+
 ```
 sudo apt-get install ccache
 ```
