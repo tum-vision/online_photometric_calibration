@@ -26,6 +26,14 @@ release-16.04:
     BUILD_TYPE: Debug
   <<: *compile_definition
 
+clang-16.04:
+  image: nikolausdemmel/ubuntu-dev-base:16.04
+  variables:
+    BUILD_TYPE: Release
+    CC: /usr/bin/clang
+    CXX: /usr/bin/clang++
+  <<: *compile_definition
+
 release-14.04:
   image: nikolausdemmel/ubuntu-dev-base:14.04
   variables:
