@@ -6,7 +6,15 @@
 //  Copyright (c) 2017 Paul Bergmann. All rights reserved.
 //
 
+
+// FIXME:
+//  - include <> vs ""
+//  - include guards
+//  - update file header (authorship, license info)
+//  - StandardIncludes.h
 #include "StandardIncludes.h"
+
+
 #include "ImageReader.h"
 #include "Tracker.h"
 #include "RapidExposureTimeEstimator.h"
@@ -58,6 +66,7 @@ void *run_optimization_task(void* thread_arg)
 int main(int argc, char** argv)
 {
     // TODO: move to settings struct
+    // FIXME: use uint
 
     string image_folder("images");     // Image folder.
 
@@ -189,11 +198,16 @@ int main(int argc, char** argv)
         
         if(succeeded)
         {
+            // TODO: reuse thread
             //start a new optimization task here
             pthread_create(&opt_thread, NULL, run_optimization_task, (void*)&backend_optimizer);
             optimize_cnt++;
         }
     }
+
+    // FIXME: cancel and join optimization thread, visualize result
+
+    // TODO: wait for user input, then exit
     
     return 0;
 }

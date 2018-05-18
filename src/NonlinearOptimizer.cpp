@@ -308,7 +308,7 @@ double NonlinearOptimizer::evfOptimization(bool show_debug_prints)
     if(show_debug_prints)
         std::cout << "Error before ECA adjustment: total: " << total_error << " avg: " << avg_error << std::endl;
     
-    // Prepare identity matrix for Levenberg-Marquardt damping
+    // Prepare identity matrix for Levenberg-Marquardt dampening
     cv::Mat Identity = cv::Mat::eye(num_parameters, num_parameters, CV_64F);
     Identity = Identity.mul(A);
     
@@ -683,6 +683,7 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     response_function[0] = 0;
     response_function[255] = 255;
 
+    // TODO @demmeln: 256 instead of 255?
     // For each response value i find s, such that inverse_response[s] = i
     for(int i=1;i<255;i++)
     {

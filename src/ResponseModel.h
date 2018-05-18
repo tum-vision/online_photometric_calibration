@@ -55,6 +55,7 @@ public:
     /**
      * Overwrite Grossberg parameter vector
      */
+    // Todo: change parameter to ref
     void setGrossbergParameterVector(std::vector<double> params)
     {
         m_grossberg_parameters = params;
