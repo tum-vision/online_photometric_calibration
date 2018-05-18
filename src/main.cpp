@@ -23,18 +23,6 @@ pthread_t opt_thread = 0;
 pthread_mutex_t g_is_optimizing_mutex;
 bool g_is_optimizing = false;
 
-
-void parseArgument(const char* arg)
-{
-    char buf[1000];
-    int value_int;
-
-
-    }
-
-    printf("Could not parse argument \"%s\"!!!\n", arg);
-}
-
 void *run_optimization_task(void* thread_arg)
 {
     std::cout << "START OPTIMIZATION" << std::endl;
@@ -67,7 +55,7 @@ void *run_optimization_task(void* thread_arg)
     pthread_exit(NULL);
 }
 
-int main(int argc, const char * argv[])
+int main(int argc, char** argv)
 {
     // TODO: move to settings struct
 
@@ -86,40 +74,28 @@ int main(int argc, const char * argv[])
     int keyframe_spacing    = 15;      // Spacing for sampling keyframes in backend optimization.
     int min_keyframes_valid = 3;       // Minimum amount of keyframes a feature should be present to be included in optimization.
 
-    CLI::App app{"Online Photometric Calibration"};
+    CLI::App app("Online Photometric Calibration");
 
     app.add_option("-i,--image-folder", image_folder, "Folder with image files to read.");
     app.add_option("--start-image-index", start_image_index, "Start reading from this image index.");
+    app.add_option("--end-image-index", end_image_index, "Stop reading at this image index.");
+    app.add_option("--image-width", image_width, "Resize image to this witdth.");
+    app.add_option("--image-height", image_width, "Resize image to this height.");
 
+    // TODO: print whole configuration (add to setting struct)
 
-
-
-
-        printf("Loading images from %s!\n", image_folder.c_str());
-
-    if(1 == sscanf(arg, "start_image_index=%d", &value_int))
-        printf("Start at %d!\n", start_image_index);
-
-    if(1 == sscanf(arg, "end_image_index=%d", &value_int))
-        printf("End at %d!\n", end_image_index);
-
-    if(1 == sscanf(arg, "image_width=%d", &value_int))
-        printf("Image width %d!\n", image_width);
-
-    if(1 == sscanf(arg, "image_height=%d", &value_int))
-        printf("Image height %d!\n", image_height);
+    printf("Loading images from '%s'\n", image_folder.c_str());
+    printf("Start at index %d\n", start_image_index);
+    printf("End at index %d\n", end_image_index);
+    printf("Image width %d\n", image_width);
+    printf("Image height %d\n", image_height);
 
     CLI11_PARSE(app, argc, argv);
-
-
-
-    for(int i = 1; i < argc; i++)
-        parseArgument(argv[i]);
 
     int safe_zone_size = nr_images_rapid_exp + 5;
 
     //  Set up the object to read new images from
-    ImageReader image_reader(image_folder, cv::Size(image_width,image_height));
+    ImageReader image_reader(image_folder, cv::Size(image_width, image_height));
 
     // Set up the information database
     Database database(image_width,image_height);
