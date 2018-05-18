@@ -1,0 +1,38 @@
+
+.compile_template: &compile_definition
+  stage: build
+  before_script:
+    - mkdir -p ccache
+    - export CCACHE_BASEDIR=${PWD}
+    - export CCACHE_DIR=${PWD}/ccache
+  cache:
+    paths:
+    - ccache/
+  script:
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+    - make -j3
+
+debug-16.04:
+  image: nikolausdemmel/ubuntu-dev-base:16.04
+  variables:
+    BUILD_TYPE: Release
+  <<: *compile_definition
+
+release-16.04:
+  image: nikolausdemmel/ubuntu-dev-base:16.04
+  variables:
+    BUILD_TYPE: Debug
+  <<: *compile_definition
+
+release-14.04:
+  image: nikolausdemmel/ubuntu-dev-base:14.04
+  variables:
+    BUILD_TYPE: Release
+    CC: /usr/lib/ccache/gcc
+    CXX: /usr/lib/ccache/g++
+  <<: *compile_definition
+
+
+# TODO: checkout this use of travis with docker: https://github.com/OpenChannelSSD/liblightnvm/blob/master/.travis.yml
