@@ -27,7 +27,12 @@ SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-march=${CXX_MARCH} ${CMAKE_CXX_FLAGS_RELWI
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-sign-compare")
 
 # Required libraries
-find_package(OpenCV 2.4 REQUIRED)
+if(APPLE)
+  # give the homebrew path as hint, since the formula is keg-only
+  find_package(OpenCV 2.4 REQUIRED HINTS /usr/local/opt/opencv@2)
+else()
+  find_package(OpenCV 2.4 REQUIRED)
+endif()
 find_package(Threads REQUIRED)
 
 # Configure CCache if available (requires cmake 3.4 or newer)
@@ -36,7 +41,7 @@ if(CCACHE_PROGRAM)
   message(STATUS "Found ccache: ${CCACHE_PROGRAM}")
   set(CMAKE_C_COMPILER_LAUNCHER   ${CCACHE_PROGRAM})
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
-endif(CCACHE_PROGRAM)
+endif()
 
 # output paths in the build directory
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
