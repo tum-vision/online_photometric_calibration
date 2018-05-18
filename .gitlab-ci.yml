@@ -1,5 +1,5 @@
-compile-16.04:
-  image: nikolausdemmel/ubuntu-dev-base:16.04
+
+.compile_template: &compile_definition
   stage: build
   before_script:
     - mkdir -p ccache
@@ -11,24 +11,26 @@ compile-16.04:
   script:
     - mkdir build
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
     - make -j3
 
-compile-14.04:
+compile-debug-16.04:
+  image: nikolausdemmel/ubuntu-dev-base:16.04
+  variables:
+    BUILD_TYPE: Release
+  <<: *compile_definition
+
+compile-release-16.04:
+  image: nikolausdemmel/ubuntu-dev-base:16.04
+  variables:
+    BUILD_TYPE: Debug
+  <<: *compile_definition
+
+compile-release-14.04:
   image: nikolausdemmel/ubuntu-dev-base:14.04
-  stage: build
-  before_script:
-    - mkdir -p ccache
-    - export CCACHE_BASEDIR=${PWD}
-    - export CCACHE_DIR=${PWD}/ccache
-  cache:
-    paths:
-    - ccache/
-  script:
-    - mkdir build
-    - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - make -j3
+  variables:
+    BUILD_TYPE: Release
+  <<: *compile_definition
 
 
 # TODO: checkout this use of travis with docker: https://github.com/OpenChannelSSD/liblightnvm/blob/master/.travis.yml
