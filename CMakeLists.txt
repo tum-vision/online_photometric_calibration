@@ -66,13 +66,14 @@ add_custom_target(_include_files_fix_target SOURCES ${_INCLUDE_FILES})
 
 # main library
 add_library(online_pcalib SHARED ${ONLINE_CALIB_SOURCE_FILES})
+target_link_libraries(online_pcalib
+  ${OpenCV_LIBS}
+  ${CMAKE_THREAD_LIBS_INIT})
 
 # demo executable for online calibration
 add_executable(online_pcalib_demo src/main.cpp)
 target_link_libraries(online_pcalib_demo
-  online_pcalib
-  ${OpenCV_LIBS}
-  ${CMAKE_THREAD_LIBS_INIT})
+  online_pcalib)
 
 # install rules
 install (TARGETS online_pcalib online_pcalib_demo
