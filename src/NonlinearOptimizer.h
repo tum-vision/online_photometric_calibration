@@ -41,10 +41,10 @@ public:
      * be read by the opt. backend because it still might be modified by the tracking.
      *
      * @param keyframe_spacing Number of frames that keyframes are apart (relative to all input frames)
-     * @param databsae Handle to the database
-     * @param safe_zone_size Dont take images from the first safe_zone_size frames of the database since they are still
+     * @param database Handle to the database
+     * @param safe_zone_size Don't take images from the first safe_zone_size frames of the database since they are still
      *        being processed by exposure optimization
-     * @param min_keyframes_valid Minimium amount of keyframes a feature should be present in in order to include it to optimization
+     * @param min_keyframes_valid Minimum amount of keyframes a feature should be present in in order to include it to optimization
      * @param patch_size Size of tracking patch extracted around features
      */
     NonlinearOptimizer(int keyframe_spacing, Database* database,int safe_zone_size,int min_keyframes_valid,int patch_size);
@@ -60,7 +60,7 @@ public:
      * 
      * @param show_debug_prints Print some debug information such as reduction of the energy
      */
-    double evfOptmization(bool show_debug_prints);
+    double evfOptimization(bool show_debug_prints);
     
     /**
      * Optimize for irradiance values, keeping EVF estimate fixed

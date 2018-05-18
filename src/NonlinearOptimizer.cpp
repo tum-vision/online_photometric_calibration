@@ -186,7 +186,7 @@ bool NonlinearOptimizer::extractOptimizationBlock()
     return true;
 }
 
-double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
+double NonlinearOptimizer::evfOptimization(bool show_debug_prints)
 {
     // Used for calculating first order derivatives, creating the Jacobian
     JacobianGenerator jacobian_generator;
@@ -218,7 +218,7 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
     for(int p = 0;p < points_to_optimize->size();p++)
     {
         int image_start_index = points_to_optimize->at(p).start_image_idx;
-        int nr_img_valid    = points_to_optimize->at(p).num_images_valid;
+        int nr_img_valid = points_to_optimize->at(p).num_images_valid;
         
         // Iterate images the point is valid
         for(int i = 0;i < nr_img_valid;i++)
@@ -234,7 +234,7 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
                     continue;
                 
                 double radiance = points_to_optimize->at(p).radiances.at(r);
-                double o_value    = points_to_optimize->at(p).output_intensities.at(i).at(r);
+                double o_value = points_to_optimize->at(p).output_intensities.at(i).at(r);
                 
                 // Avoid I = 0 which leads to NaN errors in the Jacobian, also ignore implausible radiance estimates much larger than 1
                 if(radiance < 0.001 || radiance > 1.1)
@@ -411,7 +411,10 @@ double NonlinearOptimizer::evfOptmization(bool show_debug_prints)
     int abs_image_index = 0;
     for(int i = 0;i < m_optimization_block->getNrImages();i++)
     {
-        double new_exp_time = exp_backups.at(i) + lambda*BestStateUpdate.at<double>((int)m_response_estimate.size()+(int)m_vignette_estimate.size()+abs_image_index,0);
+        double new_exp_time = exp_backups.at(i) +
+                              lambda*BestStateUpdate.at<double>((int)m_response_estimate.size() +
+                                                                (int)m_vignette_estimate.size() +
+                                                                abs_image_index,0);
         m_optimization_block->setExposureTime(i,new_exp_time);
         abs_image_index++;
     }
@@ -658,7 +661,10 @@ double NonlinearOptimizer::applyResponse(double x)
 void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
 {
     // Define an exponential factor here to scale response + vignette
-    double exponent = 1.0;
+    //double exponent = 1.0;
+    // To go through one point of the GT response of the TUM Mono camera
+    //double exponent = determineGammaFixResponseAt(inverse_response, 206, 0.5);
+    double exponent = determineGammaFixResponseAt(inverse_response, 148, 0.3);
     
     // Setup output image windows
     cv::namedWindow("Estimated Vignetting");
@@ -672,7 +678,7 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         inverse_response_scaled[i] = 255*pow(inverse_response[i],exponent);
     }
     
-    //invert the inverse response to get the response
+    // Invert the inverse response to get the response
     double response_function[256];
     response_function[0] = 0;
     response_function[255] = 255;
@@ -690,7 +696,7 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         }
     }
     
-    //Setup a 256x256 mat to display inverse response + response
+    // Setup a 256x256 mat to display inverse response + response
     // Todo: change to class member
     cv::Mat response_vis_image(256,256,CV_8UC3,cv::Scalar(0,0,0));
     for(int i = 0;i < 256;i++)
@@ -726,11 +732,11 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         double x = i/255.0;
         
         // [1] Draw the best gamma approximation for DSO response
-        double dso_gamma_approx_y = pow(x,0.7-0.3*x);
-        int dso_gamma_approx_y_int = static_cast<int>(dso_gamma_approx_y*255);
-        if(dso_gamma_approx_y_int > 255)
-            dso_gamma_approx_y_int = 255;
-        /*response_vis_image.at<cv::Vec3b>(255-dso_gamma_approx_y_int,i)[0] = 255;
+        /*double dso_gamma_approx_y = pow(x,0.7-0.3*x);
+         int dso_gamma_approx_y_int = static_cast<int>(dso_gamma_approx_y*255);
+         if(dso_gamma_approx_y_int > 255)
+             dso_gamma_approx_y_int = 255;
+         response_vis_image.at<cv::Vec3b>(255-dso_gamma_approx_y_int,i)[0] = 255;
          response_vis_image.at<cv::Vec3b>(255-dso_gamma_approx_y_int,i)[1] = 255;
          response_vis_image.at<cv::Vec3b>(255-dso_gamma_approx_y_int,i)[2] = 0;*/
         
@@ -760,17 +766,17 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         response_vis_image.at<cv::Vec3b>(255-dso_value,i)[1] = 255;
         response_vis_image.at<cv::Vec3b>(255-dso_value,i)[2] = 0;
         
-        /*
-         * Draw GT response for artificial dataset
-         */
-        //draw the GT response for canon EOS 600 D
-        double artificial_value_f = pow(x,0.6-0.2*x);
-        int artificial_value = static_cast<int>(artificial_value_f*255);
-        if(artificial_value > 255)
-            artificial_value = 255;
-        response_vis_image.at<cv::Vec3b>(255-artificial_value,i)[0] = 0;
-        response_vis_image.at<cv::Vec3b>(255-artificial_value,i)[1] = 255;
-        response_vis_image.at<cv::Vec3b>(255-artificial_value,i)[2] = 255;
+//        /*
+//         * Draw GT response for artificial dataset
+//         */
+//        //draw the GT response for canon EOS 600 D
+//        double artificial_value_f = pow(x,0.6-0.2*x);
+//        int artificial_value = static_cast<int>(artificial_value_f*255);
+//        if(artificial_value > 255)
+//            artificial_value = 255;
+//        response_vis_image.at<cv::Vec3b>(255-artificial_value,i)[0] = 0;
+//        response_vis_image.at<cv::Vec3b>(255-artificial_value,i)[1] = 255;
+//        response_vis_image.at<cv::Vec3b>(255-artificial_value,i)[2] = 255;
         
     }
     
@@ -820,12 +826,12 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
          vignette_vis_image.at<cv::Vec3b>(y_pos,i)[1] = 255;
          vignette_vis_image.at<cv::Vec3b>(y_pos,i)[2] = 0;
         
-        // Plot the vignetting for artificial dataset
-        double art_vignette =  0.9983-0.0204*r -0.2341*r_2 - 0.0463*r_2*r;
-        y_pos = 245 - round(235*art_vignette  );
-        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[0] = 0;
-        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[1] = 255;
-        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[2] = 255;
+//        // Plot the vignetting for artificial dataset
+//        double art_vignette =  0.9983-0.0204*r -0.2341*r_2 - 0.0463*r_2*r;
+//        y_pos = 245 - round(235*art_vignette  );
+//        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[0] = 0;
+//        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[1] = 255;
+//        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[2] = 255;
         
     }
     
