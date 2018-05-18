@@ -38,6 +38,11 @@ if(CCACHE_PROGRAM)
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
 endif(CCACHE_PROGRAM)
 
+# output paths in the build directory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 # include path
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
@@ -60,7 +65,7 @@ file(GLOB_RECURSE _INCLUDE_FILES "src/*.h")
 add_custom_target(_include_files_fix_target SOURCES ${_INCLUDE_FILES})
 
 # main library
-add_library(online_pcalib ${ONLINE_CALIB_SOURCE_FILES})
+add_library(online_pcalib SHARED ${ONLINE_CALIB_SOURCE_FILES})
 
 # demo executable for online calibration
 add_executable(online_pcalib_demo src/main.cpp)
@@ -69,3 +74,8 @@ target_link_libraries(online_pcalib_demo
   ${OpenCV_LIBS}
   ${CMAKE_THREAD_LIBS_INIT})
 
+# install rules
+install (TARGETS online_pcalib online_pcalib_demo
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
