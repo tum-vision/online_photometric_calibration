@@ -46,6 +46,11 @@ public:
      * Exposure time estimate (from rapid exposure time estimation)
      */
     double m_exp_time;
+
+    /**
+    * Ground truth exposure time if available
+    */
+    double m_gt_exp_time;
 };
 
 #endif /* defined(__OnlineCalibration__Frame__) */

@@ -66,7 +66,7 @@ public:
      * Filter out spurious tracks
      */
      // Todo: change param to reference
-    void trackNewFrame(cv::Mat frame);
+    void trackNewFrame(cv::Mat frame,double gt_exp_time);
     
 private:
     

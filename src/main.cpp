@@ -14,7 +14,6 @@
 //  - StandardIncludes.h
 #include "StandardIncludes.h"
 
-
 #include "ImageReader.h"
 #include "Tracker.h"
 #include "RapidExposureTimeEstimator.h"
@@ -46,6 +45,8 @@ void *run_optimization_task(void* thread_arg)
 
     // Perform optimization
     optimizer->evfOptimization(false);
+    optimizer->evfOptimization(false);
+    optimizer->evfOptimization(false);
     
     // Smooth optimization data
     optimizer->smoothResponse();
@@ -63,12 +64,24 @@ void *run_optimization_task(void* thread_arg)
     pthread_exit(NULL);
 }
 
+// Split a string into substrings given a char delimiter
+std::vector<string> split(const string &s, char delim) {
+    stringstream ss(s);
+    string item;
+    vector<string> tokens;
+    while (getline(ss, item, delim)) {
+        tokens.push_back(item);
+    }
+    return tokens;
+}
+
 int main(int argc, char** argv)
 {
     // TODO: move to settings struct
     // FIXME: use uint
 
-    string image_folder("images");     // Image folder.
+    string image_folder("images");        // Image folder.
+    string exposure_gt_file("");          // Exposure times ground truth file.
 
     int visualize_cnt       = 1;       // Visualize every visualize_cnt image (tracking + correction), rather slow.
     int start_image_index   = 0;       // Start image index.
@@ -90,6 +103,7 @@ int main(int argc, char** argv)
     app.add_option("--end-image-index", end_image_index, "Stop reading at this image index.");
     app.add_option("--image-width", image_width, "Resize image to this witdth.");
     app.add_option("--image-height", image_width, "Resize image to this height.");
+    app.add_option("--exposure_gt_file",exposure_gt_file, "File containing exposure ground truth for each frame.");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -101,6 +115,39 @@ int main(int argc, char** argv)
     printf("Image width %d\n", image_width);
     printf("Image height %d\n", image_height);
 
+    // Parse gt exposure times from file if available
+    // Only use the last number in each line, delimiter is the space character ' '
+    std::ifstream exposure_gt_file_handle(exposure_gt_file);
+    std::vector<double> gt_exp_times;
+    string line;
+    double min_time = 10000.0;
+    double max_time = -10000.0;
+    if (exposure_gt_file_handle.is_open())
+    {
+        while(getline(exposure_gt_file_handle,line))
+        {
+            std::string delimiter = " ";
+            std::vector<string> split_line = split(line,' ');
+            double gt_exp_time = stod(split_line.at(split_line.size()-1));
+            gt_exp_times.push_back(gt_exp_time);
+            if(gt_exp_time < min_time)
+                min_time = gt_exp_time;
+            if(gt_exp_time > max_time)
+                max_time = gt_exp_time;
+        }    
+        std::cout << "Ground truth exposure time file successfully read." << std::endl;   
+    }
+    else
+    {
+        std::cout << "Ground truth exposure time file not found." << std::endl;
+    }
+    exposure_gt_file_handle.close();
+
+    for(int k = 0;k < gt_exp_times.size();k++)
+    {    
+        //normalize gt exposures to range [0,1]
+        gt_exp_times.at(k) = (gt_exp_times.at(k) - min_time)/(max_time - min_time);
+    }
 
     int safe_zone_size = nr_images_rapid_exp + 5;
 
@@ -130,6 +177,14 @@ int main(int argc, char** argv)
     for(int i = start_image_index; i < num_images && i < end_image_index; i++)
     {
         std::cout << "image: " << i << std::endl;
+
+        // Read GT exposure time if available for this frame
+        // Todo: Check if index is out of bounds, if gt exp file has not enough lines
+        double gt_exp_time = -1.0;
+        if(gt_exp_times.size() > 0)
+        {
+            gt_exp_time = gt_exp_times.at(i);
+        }
         
         // If enough images are in the database, remove once all initial images for which no exposure time could be optimized
         // Since those frames will not be that good for backend optimization
@@ -149,12 +204,12 @@ int main(int argc, char** argv)
         cv::Mat new_image = image_reader.readImage(i);
         
         // Track input image (+ time the result)
-        tracker.trackNewFrame(new_image);
-     
+        tracker.trackNewFrame(new_image,gt_exp_time);
+      
         // Rapid exposure time estimation (+ time the result)
         double exposure_time = exposure_estimator.estimateExposureTime();
         database.m_tracked_frames.at(database.m_tracked_frames.size()-1).m_exp_time = exposure_time;
-        
+
         // Remove the exposure time from the radiance estimates
         std::vector<Feature*>* features = &database.m_tracked_frames.at(database.m_tracked_frames.size()-1).m_features;
         for(int k = 0;k < features->size();k++)

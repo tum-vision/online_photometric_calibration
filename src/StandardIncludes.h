@@ -32,5 +32,6 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <vector>
+#include <fstream>
 
 #endif

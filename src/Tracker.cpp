@@ -17,7 +17,7 @@ Tracker::Tracker(int patch_size,int nr_active_features,int nr_pyramid_levels,Dat
     m_database = database;
 }
 
-void Tracker::trackNewFrame(cv::Mat input_image)
+void Tracker::trackNewFrame(cv::Mat input_image,double gt_exp_time)
 {
     // Compute gradient (necessary for weighting factors)
     // Todo: move to class member
@@ -113,7 +113,8 @@ void Tracker::trackNewFrame(cv::Mat input_image)
     frame.m_image_corrected = corrected_frame;
     frame.m_gradient_image = gradient_image;
     frame.m_exp_time = 1.0;
-    
+    frame.m_gt_exp_time = gt_exp_time;
+
     // Reject features that have been tracked to the side of the image
     // Todo: validity_vector can be combined with tracked_point_status to one vector?
     std::vector<int> validity_vector = checkLocationValidity(tracked_points_new_frame);
