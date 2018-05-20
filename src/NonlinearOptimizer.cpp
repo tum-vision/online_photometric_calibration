@@ -647,7 +647,14 @@ double NonlinearOptimizer::applyVignetting(double r)
     double r_4 = r_2 * r_2;
     double r_6 = r_4 * r_2;
     
-    return 1 + m_vignette_estimate.at(0) * r_2 + m_vignette_estimate.at(1)*r_4 + m_vignette_estimate.at(2) * r_6;
+    double result_vignette = 1 + m_vignette_estimate.at(0) * r_2 + m_vignette_estimate.at(1)*r_4 + m_vignette_estimate.at(2) * r_6;
+    
+    if(result_vignette < 0)
+        result_vignette = 0.0;
+    if(result_vignette > 1)
+        result_vignette = 1.0;
+    
+    return result_vignette;
 }
 
 double NonlinearOptimizer::applyResponse(double x)
