@@ -62,7 +62,7 @@ bool NonlinearOptimizer::extractOptimizationBlock()
             
             // Push exposure time estimate (use either the one found from rapid exposure time estimation or 1.0)
             // If 1.0 is used, then all the optimization parameters should also be initialized with the same constant values (for V,f,E,L)
-            m_optimization_block->pushExposureTime(m_database->m_tracked_frames.at(i).m_exp_time);
+            m_optimization_block->pushExposureTime(m_database->m_tracked_frames.at(i).m_exp_time,m_database->m_tracked_frames.at(i).m_gt_exp_time);
             //m_optimization_block->pushExposureTime(1.0);
         }
         
@@ -789,7 +789,8 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     }
     
     cv::imshow("Estimated Response", response_vis_image);
-    
+    cv::moveWindow("Estimated Response", 20,20);
+
     // Show the vignetting
     
     //Setup a 256x256 mat to display vignetting
@@ -844,7 +845,8 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     }
     
     cv::imshow("Estimated Vignetting", vignette_vis_image);
-       
+    cv::moveWindow("Estimated Vignetting", 20,20+50+256);
+
 
     // Visualize exposure times 
     // If GT data is available, the estimated exposure times will be aligned 
@@ -890,7 +892,7 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         alignment_alpha = top/bot;
     else
     {
-        //normalize estimated exposures between [0,1]
+        // Normalize estimated exposures between [0,1]
         for(int k = 0;k < estimated_exp_times.size();k++)
         {
             estimated_exp_times.at(k) = (estimated_exp_times.at(k)-min_exp)/(max_exp-min_exp);
@@ -911,11 +913,11 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         drawing_y_exp_2 = int(fmax(0,drawing_y_exp_2));
         drawing_y_exp_2 = int(fmin(exp_image_height-1,drawing_y_exp_2));
 
-        //draw exposure lines
+        // Draw exposure lines
         cv::line(exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_exp_2), cv::Scalar(255,0,0));
      }
 
-    // draw GT exposure line only if GT exposure data is available
+    // Draw GT exposure line only if GT exposure data is available
     if(gt_exp_times.size() == estimated_exp_times.size())
     {
         for(int i = 0;i < nr_frames_to_vis-1;i++)
@@ -932,7 +934,98 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         }
     }   
 
-    cv::imshow("Estimated Exposure", exposure_vis_image);
+    cv::imshow("Estimated Exposure (Rapid)", exposure_vis_image);
+    cv::moveWindow("Estimated Exposure (Rapid)", 20+20+256,20);
+
+    // Show estimated exposure times using backend optimization
+    int nr_block_images = m_optimization_block->getNrImages();
+    top = 0;
+    bot = 0;
+    max_exp = -1000.0;
+    min_exp = 1000.0;
+    std::vector<double> block_exp_estimates;
+    std::vector<double> block_exp_gt;
+    for(int i = 0;i < nr_block_images;i++)
+    {
+        double estimated_exp = m_optimization_block->getExposureTime(i);
+        estimated_exp = pow(estimated_exp,exponent);
+        double gt_exp = m_optimization_block->getGTExposureTime(i);
+
+        // Store max and min exposure for normalization to [0,1] range 
+        if(estimated_exp > max_exp)
+            max_exp = estimated_exp;
+        if(estimated_exp < min_exp)
+            min_exp = estimated_exp;
+
+        // Accumulate information for least square fit between GT and estimated exposure
+        top += estimated_exp*gt_exp;
+        bot += estimated_exp*estimated_exp;
+
+        block_exp_estimates.push_back(estimated_exp);
+        if(!(gt_exp < 0))
+            block_exp_gt.push_back(gt_exp);
+    }
+
+    if(block_exp_estimates.size() == block_exp_gt.size())
+    {
+        alignment_alpha = top/bot;
+    }
+    else
+    {
+        // Normalize estimated exposures between [0,1] if no gt information is available for alignment
+        for(int i = 0;i < block_exp_estimates.size();i++)
+        {
+            block_exp_estimates.at(i) = (block_exp_estimates.at(i)-min_exp)/(max_exp-min_exp);
+        }
+    }
+
+    for(int i = 0;i < block_exp_estimates.size();i++)
+    {
+        block_exp_estimates.at(i) *= alignment_alpha;
+    }
+
+    // Create exposure time canvas
+    int block_exp_window_width = int(fmax(400,draw_spacing*block_exp_estimates.size()));
+    draw_spacing = 20;
+    cv::Mat block_exposure_vis_image(exp_image_height,block_exp_window_width,CV_8UC3,cv::Scalar(0,0,0));
+
+    // Draw estimated exposure times as lines to graph
+    for(int i = 0;i < block_exp_estimates.size()-1;i++)
+    {
+        int drawing_y_exp_1 = exp_image_height - exp_image_height*(block_exp_estimates.at(i));
+        drawing_y_exp_1 = int(fmax(0,drawing_y_exp_1));
+        drawing_y_exp_1 = int(fmin(exp_image_height-1,drawing_y_exp_1));
+
+        int drawing_y_exp_2 = exp_image_height - exp_image_height*(block_exp_estimates.at(i+1));
+        drawing_y_exp_2 = int(fmax(0,drawing_y_exp_2));
+        drawing_y_exp_2 = int(fmin(exp_image_height-1,drawing_y_exp_2));
+
+        //draw exposure lines
+        cv::line(block_exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_exp_2), cv::Scalar(255,0,0));
+     }
+
+    // draw GT exposure line only if GT exposure data is available
+    if(block_exp_estimates.size() == block_exp_gt.size())
+    {
+        for(int i = 0;i < block_exp_estimates.size()-1;i++)
+        {
+            int drawing_y_gt_exp_1 = exp_image_height - exp_image_height * block_exp_gt.at(i);
+            drawing_y_gt_exp_1 = int(fmax(0,drawing_y_gt_exp_1));
+            drawing_y_gt_exp_1 = int(fmin(exp_image_height-1,drawing_y_gt_exp_1));
+
+            int drawing_y_gt_exp_2 = exp_image_height - exp_image_height * block_exp_gt.at(i+1);
+            drawing_y_gt_exp_2 = int(fmax(0,drawing_y_gt_exp_2));
+            drawing_y_gt_exp_2 = int(fmin(exp_image_height-1,drawing_y_gt_exp_2));
+
+            std::cout << "drawing: " << drawing_y_gt_exp_1 << " to " << drawing_y_gt_exp_2 << std::endl;
+
+            cv::line(block_exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_gt_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_gt_exp_2), cv::Scalar(255,255,0));
+        }
+    }   
+
+    cv::imshow("Estimated Keyframe Exposures (Backend)", block_exposure_vis_image);
+    cv::moveWindow("Estimated Keyframe Exposures (Backend)", 20+20+256,20+40+exp_image_height);
+
 
     cv::waitKey(1);
 }
@@ -1034,8 +1127,15 @@ void NonlinearOptimizer::smoothResponse()
         vfactors[r] = vfactor;
     }
     
-    //[Note] Radiances and exposure times of optimization should be scaled as well, but since these are not used anymore, its not done
-    
+    //[Note] Radiances of optimization should be scaled as well, but since these are not used anymore, its not done
+    int nr_block_images = m_optimization_block->getNrImages();
+    for(int k = 0;k < nr_block_images;k++)
+    {
+        double old_exposure = m_optimization_block->getExposureTime(k);
+        double new_exposure = pow(old_exposure,gamma);
+        m_optimization_block->setExposureTime(k,new_exposure);
+    }
+
     // Fit new vignetting parameters in least square manner
     cv::Mat LeftSide(3,3,CV_64F,0.0);
     cv::Mat RightSide(3,1,CV_64F,0.0);

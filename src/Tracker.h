@@ -118,7 +118,7 @@ private:
      * Extract features for the first time
      */
     // Todo: change param to reference
-    void initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_image);
+    void initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_image,double gt_exp_time);
     
     /**
      * Compute gradient image

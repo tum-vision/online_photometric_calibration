@@ -32,7 +32,7 @@ void Tracker::trackNewFrame(cv::Mat input_image,double gt_exp_time)
     // Empty database -> First frame - extract features and push them back
     if(m_database->m_tracked_frames.size() == 0)
     {
-        initialFeatureExtraction(input_image,gradient_image);
+        initialFeatureExtraction(input_image,gradient_image,gt_exp_time);
         return;
     }
     
@@ -369,7 +369,7 @@ std::vector<int> Tracker::checkLocationValidity(std::vector<cv::Point2f> points)
 }
 
 // Todo: change parameter type to reference (or const reference)
-void Tracker::initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_image)
+void Tracker::initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_image,double gt_exp_time)
 {
     std::vector<cv::Point2f> old_f;
     std::vector<cv::Point2f> feature_locations = extractFeatures(input_image,old_f);
@@ -380,6 +380,7 @@ void Tracker::initialFeatureExtraction(cv::Mat input_image,cv::Mat gradient_imag
     frame.m_image = input_image;
     frame.m_image_corrected = input_image.clone();
     frame.m_exp_time = 1.0;
+    frame.m_gt_exp_time = gt_exp_time;
     
     // Push back tracked feature points to the tracking Frame
     for(int p = 0;p < feature_locations.size();p++)

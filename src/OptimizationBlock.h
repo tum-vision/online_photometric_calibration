@@ -45,9 +45,10 @@ public:
     /**
      * Push back a new exposure time
      */
-    void pushExposureTime(double exp_time)
+    void pushExposureTime(double exp_time,double gt_exp_time)
     {
         m_exposure_times.push_back(exp_time);
+        m_gt_exposure_times.push_back(gt_exp_time);
     }
     
     /**
@@ -56,25 +57,19 @@ public:
     void deleteExposureTimes()
     {
         m_exposure_times.clear();
-    }
-    
-    /**
-     * Initialize exposure times with a constant value
-     */
-    void initExposures(int nr_images,double init_exposure_value)
-    {
-        m_exposure_times.clear();
-        for(int i = 0;i < nr_images;i++)
-        {
-            m_exposure_times.push_back(init_exposure_value);
-        }
+        m_gt_exposure_times.clear();
     }
     
     /**
      * Get the exposure time of image i
      */
     double getExposureTime(int i){return m_exposure_times.at(i);}
-    
+
+    /**
+    * Get the ground truth exposure time of image i
+    */
+    double getGTExposureTime(int i){return m_gt_exposure_times.at(i);}
+
     /**
      * Get the number of residuals within this optimization block
      */
@@ -142,6 +137,11 @@ private:
      * Exposure time estimates of the keyframes used for backend optimization
      */
     std::vector<double> m_exposure_times;
+
+    /**
+     * Ground truth exposure times for the keyframes used for backend optimization
+     */
+    std::vector<double> m_gt_exposure_times;
     
     /**
      * Original images used for this block
