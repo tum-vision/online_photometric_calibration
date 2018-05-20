@@ -261,7 +261,7 @@ int main(int argc, char** argv)
         }
     }
 
-    // FIXME: cancel and join optimization thread, visualize result
+    pthread_join(opt_thread,NULL);
 
     // TODO: wait for user input, then exit
     
