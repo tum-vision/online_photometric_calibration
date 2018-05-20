@@ -132,7 +132,7 @@ unzip -d sequence_$SEQ/images sequence_$SEQ/images.zip
 Run online calibration.
 
 ```
-build/bin/online_pcalib_demo -i sequence_$SEQ/images
+build/bin/online_pcalib_demo -i sequence_$SEQ/images --exposure_gt_file sequence_$SEQ/times.txt
 ```
 
 **Command-line options:**
@@ -148,6 +148,7 @@ Options:
   --end-image-index INT       Stop reading at this image index.
   --image-width INT           Resize image to this witdth.
   --image-height INT          Resize image to this height.
+  --exposure_gt_file          Textfile containing ground truth exposure times for each frame.
 ```
 
 ### Batch calibration
