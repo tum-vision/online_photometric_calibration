@@ -212,6 +212,7 @@ int run_batch_calibration(Settings *run_settings,std::vector<double> gt_exp_time
         {
             //Something went wrong..
             std::cout << "Error: Optimization block could not be fetched." << std::endl;
+            return -1;
         }
     }
     
@@ -358,6 +359,9 @@ int main(int argc, char** argv)
     run_settings.image_folder = "images";
     run_settings.exposure_gt_file = "";
     run_settings.calibration_mode = "online";
+    run_settings.nr_active_frames    = 200;    
+    run_settings.keyframe_spacing    = 15; 
+    run_settings.min_keyframes_valid = 3;
 
     app.add_option("-i,--image-folder", run_settings.image_folder, "Folder with image files to read.");
     app.add_option("--start-image-index", run_settings.start_image_index, "Start reading from this image index.");
@@ -366,6 +370,10 @@ int main(int argc, char** argv)
     app.add_option("--image-height", run_settings.image_width, "Resize image to this height.");
     app.add_option("--exposure_gt_file",run_settings.exposure_gt_file, "Textfile containing ground truth exposure times for each frame.");
     app.add_option("--calibration_mode",run_settings.calibration_mode,"Choose 'online' or 'batch'");
+    
+    app.add_option("--nr_active_frames", run_settings.nr_active_frames, "Maximum number of frames to be stored in the database.");
+    app.add_option("--keyframe_spacing",run_settings.keyframe_spacing, "Number of frames that keyframes are apart in the backend optimizer.");
+    app.add_option("--min_keyframes_valid",run_settings.min_keyframes_valid,"Minimum number of frames a feature has to be tracked to be considered for optimization.");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -414,17 +422,11 @@ int main(int argc, char** argv)
     if(run_settings.calibration_mode == "online")
     {
         std::cout << "Run online calibration mode." << std::endl;
-        run_settings.nr_active_frames    = 200;    
-        run_settings.keyframe_spacing    = 15; 
-        run_settings.min_keyframes_valid = 3;
         run_online_calibration(&run_settings,gt_exp_times);
     }
     else if(run_settings.calibration_mode == "batch")
     {
         std::cout << "Run batch calibration mode." << std::endl;
-        run_settings.nr_active_frames    = 100;
-        run_settings.keyframe_spacing    = 3;
-        run_settings.min_keyframes_valid = 10;
         run_batch_calibration(&run_settings,gt_exp_times);
     }
     else

@@ -149,11 +149,32 @@ Options:
   --image-width INT           Resize image to this witdth.
   --image-height INT          Resize image to this height.
   --exposure_gt_file TEXT     Textfile containing ground truth exposure times for each frame.
+  --calibration_mode TEXT     Choose either 'online' or 'batch'. Preset is 'online'.
 ```
 
 ### Batch calibration
 
-**TODO**
+Online calibration runs the code in a multithreaded way in parallel on the CPU.
+If tracking and backend optimization should be performed sequentially and real time 
+performance is not required, the system can be run in batch calibration mode.
+For running in batch mode, simply add the command line option
+
+```
+  --calibration_mode batch
+```
+
+For batch calibration you might want to use the exposure times from the optimization
+backend rather than the rapidly estimated exposure times from the frontend. In order 
+to extract more keyframes to the backend optimizer, the run_settings parameters have to
+be adjusted.
+
+These parameters can be changed by manually setting:
+
+```
+  --nr_active_frames INT      Maximum number of frames to be stored in the database.
+  --keyframe_spacing INT      Number of frames that keyframes are apart in the backend optimizer.
+  --min_keyframes_valid INT   Minimum number of frames a feature has to be tracked to be considered for optimization.
+```
 
 ## License
 

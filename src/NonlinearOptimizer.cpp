@@ -1017,8 +1017,6 @@ void NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
             drawing_y_gt_exp_2 = int(fmax(0,drawing_y_gt_exp_2));
             drawing_y_gt_exp_2 = int(fmin(exp_image_height-1,drawing_y_gt_exp_2));
 
-            std::cout << "drawing: " << drawing_y_gt_exp_1 << " to " << drawing_y_gt_exp_2 << std::endl;
-
             cv::line(block_exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_gt_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_gt_exp_2), cv::Scalar(255,255,0));
         }
     }   
