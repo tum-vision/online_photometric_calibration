@@ -148,7 +148,7 @@ Options:
   --end-image-index INT       Stop reading at this image index.
   --image-width INT           Resize image to this witdth.
   --image-height INT          Resize image to this height.
-  --exposure_gt_file          Textfile containing ground truth exposure times for each frame.
+  --exposure_gt_file TEXT     Textfile containing ground truth exposure times for each frame.
 ```
 
 ### Batch calibration

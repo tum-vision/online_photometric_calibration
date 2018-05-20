@@ -103,7 +103,7 @@ int main(int argc, char** argv)
     app.add_option("--end-image-index", end_image_index, "Stop reading at this image index.");
     app.add_option("--image-width", image_width, "Resize image to this witdth.");
     app.add_option("--image-height", image_width, "Resize image to this height.");
-    app.add_option("--exposure_gt_file",exposure_gt_file, "File containing exposure ground truth for each frame.");
+    app.add_option("--exposure_gt_file",exposure_gt_file, "Textfile containing ground truth exposure times for each frame.");
 
     CLI11_PARSE(app, argc, argv);
 
