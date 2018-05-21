@@ -53,7 +53,7 @@ On Ubuntu 14.04 you need to get a more recent version of cmake.
 sudo add-apt-repository ppa:george-edison55/cmake-3.x
 ```
 
-Now continue to install depedencies like for Ubuntu 16.04.
+Now continue to install dependencies like for Ubuntu 16.04.
 
 #### Ubuntu 16.04
 
@@ -107,7 +107,7 @@ cmake ..
 make -j4
 ```
 
-Optionally you can install the built libraries and exectuables.
+Optionally you can install the built libraries and executables.
 
 ```
 sudo make install
@@ -132,7 +132,7 @@ unzip -d sequence_$SEQ/images sequence_$SEQ/images.zip
 Run online calibration.
 
 ```
-build/bin/online_pcalib_demo -i sequence_$SEQ/images --exposure_gt_file sequence_$SEQ/times.txt
+./build/bin/online_pcalib_demo -i sequence_$SEQ/images --exposure_gt_file sequence_$SEQ/times.txt
 ```
 
 **Command-line options:**
@@ -142,11 +142,11 @@ Online Photometric Calibration
 Usage: online_pcalib_demo [OPTIONS]
 
 Options:
-  -h,--help                   Print this help message and exit
+  -h,--help                   Print this help message and exit.
   -i,--image-folder TEXT      Folder with image files to read.
   --start-image-index INT     Start reading from this image index.
   --end-image-index INT       Stop reading at this image index.
-  --image-width INT           Resize image to this witdth.
+  --image-width INT           Resize image to this width.
   --image-height INT          Resize image to this height.
   --exposure_gt_file TEXT     Textfile containing ground truth exposure times for each frame.
   --calibration_mode TEXT     Choose either 'online' or 'batch'. Preset is 'online'.
@@ -178,7 +178,7 @@ These parameters can be changed by manually setting:
 
 ## License
 
-This project was orginally developed at the [TUM computer vision
+This project was originally developed at the [TUM computer vision
 group](https://vision.in.tum.de) in 2017 by Paul Bergmann.
 
 It is currently maintained by Paul Bermann,
