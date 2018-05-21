@@ -80,8 +80,9 @@ public:
     
     /**
      * Show inverse response + vignette estimate
+     * Returns the exponential factor that was used to align data to the ground truth
      */
-    void visualizeOptimizationResult(double* inverse_response);
+    double visualizeOptimizationResult(double* inverse_response);
     
     /**
      * Handle exponential ambiguity by fixing the response in one point, also adjusting the vignette estimate

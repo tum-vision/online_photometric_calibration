@@ -67,6 +67,99 @@ void Database::visualizeTracking()
     cv::waitKey(1);
 }
 
+void Database::visualizeRapidExposureTimeEstimates(double exponent)
+{
+    // Visualize exposure times 
+    // If GT data is available, the estimated exposure times will be aligned 
+    // to the GT by computing an optimal alignment factor alignment_alpha
+    // If no GT data is available, the estimated exposure is simply scaled between [0,1]
+    int nr_frames_to_vis = int(fmin(m_tracked_frames.size(),40));
+    int exp_image_height = 150;
+    int draw_spacing = 8;
+    std::vector<double> estimated_exp_times;
+    std::vector<double> gt_exp_times;
+    double alignment_alpha = 1.0;
+    double max_exp = -10000.0;
+    double min_exp = 10000.0;
+    double top = 0;
+    double bot = 0;
+    for(int i = 0;i < nr_frames_to_vis;i++)
+    {
+        // Fetch estimated and GT exposure time data, pow estimates with alignment exponent
+        Frame current_frame = m_tracked_frames.at(m_tracked_frames.size()-nr_frames_to_vis+i);
+        double frame_exp_time = pow(current_frame.m_exp_time,exponent);
+        double frame_time_gt  = current_frame.m_gt_exp_time;
+
+        // Keep track of max and min exposure to scale between [0,1]
+        if(frame_exp_time > max_exp)
+            max_exp = frame_exp_time;
+        if(frame_exp_time < min_exp)
+            min_exp = frame_exp_time;
+
+        // Accumulate information for least square fit between GT and estimated exposure
+        top += frame_exp_time*frame_time_gt;
+        bot += frame_exp_time*frame_exp_time;
+        
+        // Push back estimated exposure values
+        estimated_exp_times.push_back(frame_exp_time);
+
+        // Push gt exposure time if available
+        if(!(frame_time_gt < 0))
+            gt_exp_times.push_back(frame_time_gt);
+    }
+
+    // Set alignment factor only if GT exposure is available
+    if(gt_exp_times.size() == estimated_exp_times.size())
+        alignment_alpha = top/bot;
+    else
+    {
+        // Normalize estimated exposures between [0,1]
+        for(int k = 0;k < estimated_exp_times.size();k++)
+        {
+            estimated_exp_times.at(k) = (estimated_exp_times.at(k)-min_exp)/(max_exp-min_exp);
+        }
+    }
+
+    // Create exposure time canvas
+    cv::Mat exposure_vis_image(exp_image_height,draw_spacing*nr_frames_to_vis,CV_8UC3,cv::Scalar(0,0,0));
+
+    // Draw estimated exposure times as lines to graph
+    for(int i = 0;i < nr_frames_to_vis-1;i++)
+    {
+        int drawing_y_exp_1 = exp_image_height - exp_image_height*(alignment_alpha * estimated_exp_times.at(i));
+        drawing_y_exp_1 = int(fmax(0,drawing_y_exp_1));
+        drawing_y_exp_1 = int(fmin(exp_image_height-1,drawing_y_exp_1));
+
+        int drawing_y_exp_2 = exp_image_height - exp_image_height*(alignment_alpha * estimated_exp_times.at(i+1));
+        drawing_y_exp_2 = int(fmax(0,drawing_y_exp_2));
+        drawing_y_exp_2 = int(fmin(exp_image_height-1,drawing_y_exp_2));
+
+        // Draw exposure lines
+        cv::line(exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_exp_2), cv::Scalar(255,0,0));
+     }
+
+    // Draw GT exposure line only if GT exposure data is available
+    if(gt_exp_times.size() == estimated_exp_times.size())
+    {
+        for(int i = 0;i < nr_frames_to_vis-1;i++)
+        {
+            int drawing_y_gt_exp_1 = exp_image_height - exp_image_height * gt_exp_times.at(i);
+            drawing_y_gt_exp_1 = int(fmax(0,drawing_y_gt_exp_1));
+            drawing_y_gt_exp_1 = int(fmin(exp_image_height-1,drawing_y_gt_exp_1));
+
+            int drawing_y_gt_exp_2 = exp_image_height - exp_image_height * gt_exp_times.at(i+1);
+            drawing_y_gt_exp_2 = int(fmax(0,drawing_y_gt_exp_2));
+            drawing_y_gt_exp_2 = int(fmin(exp_image_height-1,drawing_y_gt_exp_2));
+
+            cv::line(exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_gt_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_gt_exp_2), cv::Scalar(255,255,0));
+        }
+    }   
+
+    cv::imshow("Estimated Exposure (Rapid)", exposure_vis_image);
+    cv::moveWindow("Estimated Exposure (Rapid)", 20+20+256,20);
+
+}
+
 // Todo: change the return to parameter passed by reference
 std::vector<cv::Point2f> Database::fetchActiveFeatureLocations()
 {

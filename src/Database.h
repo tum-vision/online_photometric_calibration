@@ -77,6 +77,12 @@ public:
      * Calling this method slows down performance of the system significantly
      */
     void visualizeTracking();
+
+    /**
+    * Visualize the rapid exposure time estimates
+    */
+    void visualizeRapidExposureTimeEstimates(double exponent);
+
 };
 
 #endif /* defined(__OnlineCalibration__Database__) */

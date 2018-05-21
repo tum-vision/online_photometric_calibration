@@ -6,7 +6,6 @@
 //  Copyright (c) 2017 Paul Bergmann. All rights reserved.
 //
 
-
 // FIXME:
 //  - include <> vs ""
 //  - include guards
@@ -125,6 +124,8 @@ int run_batch_calibration(Settings *run_settings,std::vector<double> gt_exp_time
 {
     int safe_zone_size = 0;
 
+    double vis_exponent = 1.0;
+
     //  Set up the object to read new images from
     ImageReader image_reader(run_settings->image_folder, cv::Size(run_settings->image_width, run_settings->image_height));
 
@@ -168,6 +169,7 @@ int run_batch_calibration(Settings *run_settings,std::vector<double> gt_exp_time
         // Rapid exposure time estimation (+ time the result)
         double exposure_time = exposure_estimator.estimateExposureTime();
         database.m_tracked_frames.at(database.m_tracked_frames.size()-1).m_exp_time = exposure_time;
+        database.visualizeRapidExposureTimeEstimates(vis_exponent);
 
         // Remove the exposure time from the radiance estimates
         std::vector<Feature*>* features = &database.m_tracked_frames.at(database.m_tracked_frames.size()-1).m_features;
@@ -200,7 +202,7 @@ int run_batch_calibration(Settings *run_settings,std::vector<double> gt_exp_time
             run_batch_optimization_task(&backend_optimizer);
 
             // Show optimization result
-            backend_optimizer.visualizeOptimizationResult(backend_optimizer.m_raw_inverse_response);
+            vis_exponent = backend_optimizer.visualizeOptimizationResult(backend_optimizer.m_raw_inverse_response);
 
             // Remove frames except for some overlap in order to align exposures later
             for(int k = 0;k < run_settings->nr_active_frames-30;k++)
@@ -221,6 +223,8 @@ int run_batch_calibration(Settings *run_settings,std::vector<double> gt_exp_time
 
 int run_online_calibration(Settings *run_settings,std::vector<double> gt_exp_times)
 {
+    double vis_exponent = 1.0;
+
     int safe_zone_size = run_settings->nr_images_rapid_exp + 5;
 
     //  Set up the object to read new images from
@@ -281,6 +285,7 @@ int run_online_calibration(Settings *run_settings,std::vector<double> gt_exp_tim
         // Rapid exposure time estimation (+ time the result)
         double exposure_time = exposure_estimator.estimateExposureTime();
         database.m_tracked_frames.at(database.m_tracked_frames.size()-1).m_exp_time = exposure_time;
+        database.visualizeRapidExposureTimeEstimates(vis_exponent);
 
         // Remove the exposure time from the radiance estimates
         std::vector<Feature*>* features = &database.m_tracked_frames.at(database.m_tracked_frames.size()-1).m_features;
@@ -318,7 +323,7 @@ int run_online_calibration(Settings *run_settings,std::vector<double> gt_exp_tim
             database.m_response_estimate.setGrossbergParameterVector(backend_optimizer.m_response_estimate);
             database.m_response_estimate.setInverseResponseVector(backend_optimizer.m_raw_inverse_response);
             
-            backend_optimizer.visualizeOptimizationResult(backend_optimizer.m_raw_inverse_response);
+            vis_exponent = backend_optimizer.visualizeOptimizationResult(backend_optimizer.m_raw_inverse_response);
         }
         
         // Try to fetch a new optimization block
