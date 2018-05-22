@@ -1,10 +1,13 @@
 //
 //  main.cpp
-//  OnlineCalibration
+//  OnlinePhotometricCalibration
 //
 //  Created by Paul on 16.11.17.
-//  Copyright (c) 2017 Paul Bergmann. All rights reserved.
+//  Copyright (c) 2017-2018 Paul Bergmann and co-authors. All rights reserved.
 //
+//  See LICENSE.txt
+//
+
 
 // FIXME:
 //  - include <> vs ""
