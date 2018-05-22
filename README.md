@@ -135,6 +135,11 @@ Run online calibration.
 build/bin/online_pcalib_demo -i sequence_$SEQ/images --exposure-gt-file sequence_$SEQ/times.txt
 ```
 
+*Note:* Currently the implementation is not suitable for
+ fisheye-lenses with black borders around the image, which includes
+ some of the TUMmono VO dataset sequences as well as the TUM VI
+ dataset sequences.
+
 ### Batch calibration
 
 Online calibration runs the code in a multithreaded way in parallel on the CPU.
