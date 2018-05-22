@@ -690,7 +690,7 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     response_function[0] = 0;
     response_function[255] = 255;
 
-    // TODO @demmeln: 256 instead of 255?
+    // TODO @demmeln: 256 instead of 255? @rui: should be 255, response_function[255] was set above.
     // For each response value i find s, such that inverse_response[s] = i
     for(int i=1;i<255;i++)
     {
@@ -722,9 +722,9 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
             inv_response_value = 255;
         
         //plot the response
-        response_vis_image.at<cv::Vec3b>(255-response_value,i)[0] = 255;
+        response_vis_image.at<cv::Vec3b>(255-response_value,i)[0] = 0;
         response_vis_image.at<cv::Vec3b>(255-response_value,i)[1] = 0;
-        response_vis_image.at<cv::Vec3b>(255-response_value,i)[2] = 0;
+        response_vis_image.at<cv::Vec3b>(255-response_value,i)[2] = 255;
         
         //plot the inverse response
         //response_vis_image.at<cv::Vec3b>(255-inv_response_value,i)[0] = 0;
@@ -732,9 +732,9 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         //response_vis_image.at<cv::Vec3b>(255-inv_response_value,i)[2] = 255;
         
         //draw the diagonal
-        response_vis_image.at<cv::Vec3b>(255-i,i)[0] = 255;
-        response_vis_image.at<cv::Vec3b>(255-i,i)[1] = 255;
-        response_vis_image.at<cv::Vec3b>(255-i,i)[2] = 255;
+        //response_vis_image.at<cv::Vec3b>(255-i,i)[0] = 255;
+        //response_vis_image.at<cv::Vec3b>(255-i,i)[1] = 255;
+        //response_vis_image.at<cv::Vec3b>(255-i,i)[2] = 255;
         
         // Draw a variety of GT response functions
         double x = i/255.0;
@@ -814,19 +814,19 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
             y_pos = 255;
         
         // Plot the vignetting
-        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[0] = 255;
+        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[0] = 0;
         vignette_vis_image.at<cv::Vec3b>(y_pos,i)[1] = 0;
-        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[2] = 0;
+        vignette_vis_image.at<cv::Vec3b>(y_pos,i)[2] = 255;
         
         // Plot the reference line for V = 1
-        vignette_vis_image.at<cv::Vec3b>(10,i)[0] = 255;
-        vignette_vis_image.at<cv::Vec3b>(10,i)[1] = 255;
-        vignette_vis_image.at<cv::Vec3b>(10,i)[2] = 255;
+        //vignette_vis_image.at<cv::Vec3b>(10,i)[0] = 255;
+        //vignette_vis_image.at<cv::Vec3b>(10,i)[1] = 255;
+        //vignette_vis_image.at<cv::Vec3b>(10,i)[2] = 255;
         
         // Plot the reference line for V = 0
-        vignette_vis_image.at<cv::Vec3b>(235,i)[0] = 255;
-        vignette_vis_image.at<cv::Vec3b>(235,i)[1] = 255;
-        vignette_vis_image.at<cv::Vec3b>(235,i)[2] = 255;
+        //vignette_vis_image.at<cv::Vec3b>(235,i)[0] = 255;
+        //vignette_vis_image.at<cv::Vec3b>(235,i)[1] = 255;
+        //vignette_vis_image.at<cv::Vec3b>(235,i)[2] = 255;
         
         // Plot the vignetting for DSO sequence 47
          double dso_vignette_47 = 0.971 + 0.1891*r - 1.5958*r_2 + 1.4473*r_2*r - 0.5143* r_4;
@@ -919,7 +919,7 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
         drawing_y_exp_2 = int(fmin(exp_image_height-1,drawing_y_exp_2));
 
         //draw exposure lines
-        cv::line(block_exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_exp_2), cv::Scalar(255,0,0));
+        cv::line(block_exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_exp_2), cv::Scalar(0,0,255));
      }
 
     // draw GT exposure line only if GT exposure data is available
@@ -1075,7 +1075,6 @@ void NonlinearOptimizer::smoothResponse()
             }
         }
 
-        // Todo: what is this? Why not using normal least square?
         double radius = r/100.0;
         double r2 = radius*radius;
         double r4 = r2*r2;

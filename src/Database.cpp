@@ -135,7 +135,7 @@ void Database::visualizeRapidExposureTimeEstimates(double exponent)
         drawing_y_exp_2 = int(fmin(exp_image_height-1,drawing_y_exp_2));
 
         // Draw exposure lines
-        cv::line(exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_exp_2), cv::Scalar(255,0,0));
+        cv::line(exposure_vis_image, cv::Point(draw_spacing*i,drawing_y_exp_1), cv::Point(draw_spacing*(i+1),drawing_y_exp_2), cv::Scalar(0,0,255));
      }
 
     // Draw GT exposure line only if GT exposure data is available

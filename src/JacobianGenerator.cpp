@@ -255,7 +255,6 @@ std::vector<double> JacobianGenerator::fitGrossbergModelToResponseVector(double*
         double f3 = evaluateGrossbergBaseFunction(3, false, input);
         double f4 = evaluateGrossbergBaseFunction(4, false, input);
 
-        // Todo: again, what is this?
         // For equation 1
         LeftSide.at<double>(0,0) += f1*f1;
         LeftSide.at<double>(0,1) += f1*f2;

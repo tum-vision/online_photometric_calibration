@@ -57,7 +57,7 @@ public:
      * Get the Jacobian information, passing the irradiance, radius of the point and exposure time
      * of the image
      */
-     // Todo: what does eca mean?
+     // Todo: what does eca mean? Term for evf from old version.
     void getJacobianRow_eca(double I, double r, double e,cv::Mat jacobian,int image_index,int residual_index);
     
     /**
