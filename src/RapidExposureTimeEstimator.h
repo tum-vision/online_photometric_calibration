@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__RapidExposureTimeEstimator__
-#define __OnlineCalibration__RapidExposureTimeEstimator__
+#ifndef OnlinePhotometricCalibration_RapidExposureTimeEstimator_h_
+#define OnlinePhotometricCalibration_RapidExposureTimeEstimator_h_
 
 #include "StandardIncludes.h"
 
@@ -47,4 +47,4 @@ private:
     int m_window_size;
 };
 
-#endif /* defined(__OnlineCalibration__RapidExposureTimeEstimator__) */
+#endif // include guard

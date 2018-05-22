@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__ResponseModel__
-#define __OnlineCalibration__ResponseModel__
+#ifndef OnlinePhotometricCalibration_ResponseModel_h_
+#define OnlinePhotometricCalibration_ResponseModel_h_
 
 #include "StandardIncludes.h"
 
@@ -97,4 +97,4 @@ private:
 
 };
 
-#endif /* defined(__OnlineCalibration__ResponseModel__) */
+#endif // include guard

@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__Feature__
-#define __OnlineCalibration__Feature__
+#ifndef OnlinePhotometricCalibration_Feature_h_
+#define OnlinePhotometricCalibration_Feature_h_
 
 #include <stdio.h>
 
@@ -58,4 +58,4 @@ public:
     
 };
 
-#endif /* defined(__OnlineCalibration__Feature__) */
+#endif // include guard

@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__OptimizationBlock__
-#define __OnlineCalibration__OptimizationBlock__
+#ifndef OnlinePhotometricCalibration_OptimizationBlock_h_
+#define OnlinePhotometricCalibration_OptimizationBlock_h_
 
 #include "StandardIncludes.h"
 
@@ -152,4 +152,4 @@ private:
     std::vector<cv::Mat> m_original_images;
 };
 
-#endif /* defined(__OnlineCalibration__OptimizationBlock__) */
+#endif // include guard

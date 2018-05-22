@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__JacobianGenerator__
-#define __OnlineCalibration__JacobianGenerator__
+#ifndef OnlinePhotometricCalibration_JacobianGenerator_h_
+#define OnlinePhotometricCalibration_JacobianGenerator_h_
 
 #include "StandardIncludes.h"
 
@@ -114,4 +114,4 @@ private:
     
 };
 
-#endif /* defined(__OnlineCalibration2__JacobianGenerator__) */
+#endif // include guard

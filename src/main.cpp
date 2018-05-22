@@ -8,12 +8,6 @@
 //  See LICENSE.txt
 //
 
-
-// FIXME:
-//  - include <> vs ""
-//  - include guards
-//  - update file header (authorship, license info)
-//  - StandardIncludes.h
 #include "StandardIncludes.h"
 
 #include "ImageReader.h"

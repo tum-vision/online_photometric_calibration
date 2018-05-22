@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__Tracker__
-#define __OnlineCalibration__Tracker__
+#ifndef OnlinePhotometricCalibration_Tracker_h_
+#define OnlinePhotometricCalibration_Tracker_h_
 
 #include "StandardIncludes.h"
 
@@ -134,5 +134,5 @@ private:
     void photometricallyCorrectImage(cv::Mat &corrected_image);
 };
 
-#endif /* defined(__OnlineCalibration__Tracker__) */
+#endif // include guard
 

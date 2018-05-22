@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__ImageReader__
-#define __OnlineCalibration__ImageReader__
+#ifndef OnlinePhotometricCalibration_ImageReader_h_
+#define OnlinePhotometricCalibration_ImageReader_h_
 
 #include <stdio.h>
 #include <iostream>
@@ -56,4 +56,4 @@ private:
     std::vector<std::string> m_files;
 };
 
-#endif /* defined(__OnlineCalibration__ImageReader__) */
+#endif // include guard

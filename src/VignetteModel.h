@@ -8,12 +8,12 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__VignetteModel__
-#define __OnlineCalibration__VignetteModel__
+#ifndef OnlinePhotometricCalibration_VignetteModel_h_
+#define OnlinePhotometricCalibration_VignetteModel_h_
 
 #include "StandardIncludes.h"
 
-#include "math.h"
+#include <math.h>
 
 /**
  * Stores vignetting model parameters and provides functionality to 
@@ -85,4 +85,4 @@ private:
     double m_max_radius;
 };
 
-#endif /* defined(__OnlineCalibration__VignetteModel__) */
+#endif // include guard

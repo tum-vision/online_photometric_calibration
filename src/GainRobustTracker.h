@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__GainRobustTracker__
-#define __OnlineCalibration__GainRobustTracker__
+#ifndef OnlinePhotometricCalibration_GainRobustTracker_h_
+#define OnlinePhotometricCalibration_GainRobustTracker_h_
 
 #include "StandardIncludes.h"
 
@@ -83,4 +83,4 @@ private:
                                  std::vector<int>& point_validity);
 };
 
-#endif /* defined(__OnlineCalibration__GainRobustTracker__) */
+#endif // include guard

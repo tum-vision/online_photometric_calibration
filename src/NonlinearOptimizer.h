@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__NonlinearOptimizer__
-#define __OnlineCalibration__NonlinearOptimizer__
+#ifndef OnlinePhotometricCalibration_NonlinearOptimizer_h_
+#define OnlinePhotometricCalibration_NonlinearOptimizer_h_
 
 #include "Database.h"
 
@@ -181,4 +181,4 @@ private:
     
 };
 
-#endif /* defined(__OnlineCalibration__NonlinearOptimizer__) */
+#endif // include guard

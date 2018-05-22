@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__Frame__
-#define __OnlineCalibration__Frame__
+#ifndef OnlinePhotometricCalibration_Frame_h_
+#define OnlinePhotometricCalibration_Frame_h_
 
 #include "StandardIncludes.h"
 #include "Feature.h"
@@ -53,4 +53,4 @@ public:
     double m_gt_exp_time;
 };
 
-#endif /* defined(__OnlineCalibration__Frame__) */
+#endif // include guard

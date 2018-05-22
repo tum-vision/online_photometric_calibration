@@ -8,8 +8,8 @@
 //  See LICENSE.txt
 //
 
-#ifndef __OnlineCalibration__Database__
-#define __OnlineCalibration__Database__
+#ifndef OnlinePhotometricCalibration_Database_h_
+#define OnlinePhotometricCalibration_Database_h_
 
 #include "StandardIncludes.h"
 #include "Frame.h"
@@ -85,4 +85,4 @@ public:
 
 };
 
-#endif /* defined(__OnlineCalibration__Database__) */
+#endif // include guard
