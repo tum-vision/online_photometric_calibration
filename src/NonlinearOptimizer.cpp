@@ -690,7 +690,6 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     response_function[0] = 0;
     response_function[255] = 255;
 
-    // TODO @demmeln: 256 instead of 255? @rui: should be 255, response_function[255] was set above.
     // For each response value i find s, such that inverse_response[s] = i
     for(int i=1;i<255;i++)
     {
@@ -852,7 +851,6 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     // If GT data is available, the estimated exposure times will be aligned 
     // to the GT by computing an optimal alignment factor alignment_alpha
     // If no GT data is available, the estimated exposure is simply scaled between [0,1]
-    int nr_frames_to_vis = 60;
     int exp_image_height = 150;
     int draw_spacing = 5;
     double alignment_alpha = 1.0;
@@ -903,8 +901,8 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     }
 
     // Create exposure time canvas
-    int block_exp_window_width = int(fmax(400,draw_spacing*block_exp_estimates.size()));
     draw_spacing = 20;
+    int block_exp_window_width = int(fmax(400,draw_spacing*block_exp_estimates.size()));
     cv::Mat block_exposure_vis_image(exp_image_height,block_exp_window_width,CV_8UC3,cv::Scalar(0,0,0));
 
     // Draw estimated exposure times as lines to graph

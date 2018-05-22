@@ -132,24 +132,7 @@ unzip -d sequence_$SEQ/images sequence_$SEQ/images.zip
 Run online calibration.
 
 ```
-./build/bin/online_pcalib_demo -i sequence_$SEQ/images --exposure_gt_file sequence_$SEQ/times.txt
-```
-
-**Command-line options:**
-
-```
-Online Photometric Calibration
-Usage: online_pcalib_demo [OPTIONS]
-
-Options:
-  -h,--help                   Print this help message and exit.
-  -i,--image-folder TEXT      Folder with image files to read.
-  --start-image-index INT     Start reading from this image index.
-  --end-image-index INT       Stop reading at this image index.
-  --image-width INT           Resize image to this width.
-  --image-height INT          Resize image to this height.
-  --exposure_gt_file TEXT     Textfile containing ground truth exposure times for each frame.
-  --calibration_mode TEXT     Choose either 'online' or 'batch'. Preset is 'online'.
+build/bin/online_pcalib_demo -i sequence_$SEQ/images --exposure-gt-file sequence_$SEQ/times.txt
 ```
 
 ### Batch calibration
@@ -160,7 +143,7 @@ performance is not required, the system can be run in batch calibration mode.
 For running in batch mode, simply add the command line option
 
 ```
-  --calibration_mode batch
+  --calibration-mode batch
 ```
 
 For batch calibration you might want to use the exposure times from the optimization
@@ -171,10 +154,34 @@ be adjusted.
 These parameters can be changed by manually setting:
 
 ```
-  --nr_active_frames INT      Maximum number of frames to be stored in the database.
-  --keyframe_spacing INT      Number of frames that keyframes are apart in the backend optimizer.
-  --min_keyframes_valid INT   Minimum number of frames a feature has to be tracked to be considered for optimization.
+  --nr-active-frames INT      Maximum number of frames to be stored in the database.
+  --keyframe-spacing INT      Number of frames that keyframes are apart in the backend optimizer.
+  --min-keyframes-valid INT   Minimum number of frames a feature has to be tracked to be considered for optimization.
 ```
+
+### Command line options
+
+```
+Photometric Calibration
+Usage: online_pcalib_demo [OPTIONS]
+
+Options:
+  -h,--help                   Print this help message and exit
+  -i,--image-folder TEXT=images
+                              Folder with image files to read.
+  --start-image-index INT=0   Start reading from this image index.
+  --end-image-index INT=-1    Stop reading at this image index.
+  --image-width INT=640       Resize image to this width.
+  --image-height INT=480      Resize image to this height.
+  --exposure-gt-file TEXT=times.txt
+                              Textfile containing ground truth exposure times for each frame for visualization.
+  --calibration-mode TEXT=online
+                              Choose 'online' or 'batch'
+  --nr-active-frames INT=200  Maximum number of frames to be stored in the database.
+  --keyframe-spacing INT=15   Number of frames that keyframes are apart in the backend optimizer.
+  --min-keyframes-valid INT=3 Minimum number of frames a feature has to be tracked to be considered for optimization.
+```
+
 
 ## License
 

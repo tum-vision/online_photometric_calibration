@@ -148,7 +148,7 @@ int run_batch_calibration(Settings *run_settings,std::vector<double> gt_exp_time
     int num_images = image_reader.getNumImages();
     
     // Run over all input images, track the new image, estimate exposure time and optimize other parameters in the background
-    for(int i = run_settings->start_image_index; i < num_images && i < run_settings->end_image_index; i++)
+    for(int i = run_settings->start_image_index; i < num_images && (run_settings->end_image_index < 0 || i < run_settings->end_image_index); i++)
     {
         std::cout << "image: " << i << std::endl;
 
@@ -250,7 +250,7 @@ int run_online_calibration(Settings *run_settings,std::vector<double> gt_exp_tim
     int num_images = image_reader.getNumImages();
     
     // Run over all input images, track the new image, estimate exposure time and optimize other parameters in the background
-    for(int i = run_settings->start_image_index; i < num_images && i < run_settings->end_image_index; i++)
+    for(int i = run_settings->start_image_index; i < num_images && (run_settings->end_image_index < 0 || i < run_settings->end_image_index); i++)
     {
         std::cout << "image: " << i << std::endl;
 
@@ -347,13 +347,11 @@ int run_online_calibration(Settings *run_settings,std::vector<double> gt_exp_tim
 
 int main(int argc, char** argv)
 {
-    // TODO: move to settings struct
-    // FIXME: use uint
     CLI::App app("Photometric Calibration");
 
     Settings run_settings;
     run_settings.start_image_index   = 0;      
-    run_settings.end_image_index     = 100000;  
+    run_settings.end_image_index     = -1;
     run_settings.image_width         = 640;    
     run_settings.image_height        = 480;   
     run_settings.visualize_cnt       = 1;       
@@ -362,23 +360,23 @@ int main(int argc, char** argv)
     run_settings.nr_active_features  = 200;     
     run_settings.nr_images_rapid_exp = 15;     
     run_settings.image_folder = "images";
-    run_settings.exposure_gt_file = "";
+    run_settings.exposure_gt_file = "times.txt";
     run_settings.calibration_mode = "online";
     run_settings.nr_active_frames    = 200;    
     run_settings.keyframe_spacing    = 15; 
     run_settings.min_keyframes_valid = 3;
 
-    app.add_option("-i,--image-folder", run_settings.image_folder, "Folder with image files to read.");
-    app.add_option("--start-image-index", run_settings.start_image_index, "Start reading from this image index.");
-    app.add_option("--end-image-index", run_settings.end_image_index, "Stop reading at this image index.");
-    app.add_option("--image-width", run_settings.image_width, "Resize image to this witdth.");
-    app.add_option("--image-height", run_settings.image_width, "Resize image to this height.");
-    app.add_option("--exposure_gt_file",run_settings.exposure_gt_file, "Textfile containing ground truth exposure times for each frame.");
-    app.add_option("--calibration_mode",run_settings.calibration_mode,"Choose 'online' or 'batch'");
+    app.add_option("-i,--image-folder", run_settings.image_folder, "Folder with image files to read.", true);
+    app.add_option("--start-image-index", run_settings.start_image_index, "Start reading from this image index.", true);
+    app.add_option("--end-image-index", run_settings.end_image_index, "Stop reading at this image index.", true);
+    app.add_option("--image-width", run_settings.image_width, "Resize image to this width.", true);
+    app.add_option("--image-height", run_settings.image_height, "Resize image to this height.", true);
+    app.add_option("--exposure-gt-file", run_settings.exposure_gt_file, "Textfile containing ground truth exposure times for each frame for visualization.", true);
+    app.add_option("--calibration-mode", run_settings.calibration_mode, "Choose 'online' or 'batch'", true);
     
-    app.add_option("--nr_active_frames", run_settings.nr_active_frames, "Maximum number of frames to be stored in the database.");
-    app.add_option("--keyframe_spacing",run_settings.keyframe_spacing, "Number of frames that keyframes are apart in the backend optimizer.");
-    app.add_option("--min_keyframes_valid",run_settings.min_keyframes_valid,"Minimum number of frames a feature has to be tracked to be considered for optimization.");
+    app.add_option("--nr-active-frames", run_settings.nr_active_frames, "Maximum number of frames to be stored in the database.", true);
+    app.add_option("--keyframe-spacing", run_settings.keyframe_spacing, "Number of frames that keyframes are apart in the backend optimizer.", true);
+    app.add_option("--min-keyframes-valid", run_settings.min_keyframes_valid, "Minimum number of frames a feature has to be tracked to be considered for optimization.", true);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -408,11 +406,11 @@ int main(int argc, char** argv)
             if(gt_exp_time > max_time)
                 max_time = gt_exp_time;
         }    
-        std::cout << "Ground truth exposure time file successfully read." << std::endl;   
+        std::cout << "Ground truth exposure time file successfully read (" << run_settings.exposure_gt_file << ")." << std::endl;
     }
     else
     {
-        std::cout << "Ground truth exposure time file not found." << std::endl;
+        std::cout << "Ground truth exposure time file not found (" << run_settings.exposure_gt_file << ")." << std::endl;
     }
     exposure_gt_file_handle.close();
 
@@ -427,16 +425,16 @@ int main(int argc, char** argv)
     if(run_settings.calibration_mode == "online")
     {
         std::cout << "Run online calibration mode." << std::endl;
-        run_online_calibration(&run_settings,gt_exp_times);
+        run_online_calibration(&run_settings, gt_exp_times);
     }
     else if(run_settings.calibration_mode == "batch")
     {
         std::cout << "Run batch calibration mode." << std::endl;
-        run_batch_calibration(&run_settings,gt_exp_times);
+        run_batch_calibration(&run_settings, gt_exp_times);
     }
     else
     {
-        std::cout << "Error: Unknown calibration mode." << std::endl;
+        std::cout << "Error: Unknown calibration mode '" << run_settings.calibration_mode << "'." << std::endl;
         return -1;
     }
     return 0;
