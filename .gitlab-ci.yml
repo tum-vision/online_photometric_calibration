@@ -1,4 +1,6 @@
 
+# todo: update docker images
+
 .compile_template: &compile_definition
   stage: build
   before_script:
@@ -17,13 +19,13 @@
 debug-16.04:
   image: nikolausdemmel/ubuntu-dev-base:16.04
   variables:
-    BUILD_TYPE: Release
+    BUILD_TYPE: Debug
   <<: *compile_definition
 
 release-16.04:
   image: nikolausdemmel/ubuntu-dev-base:16.04
   variables:
-    BUILD_TYPE: Debug
+    BUILD_TYPE: Release
   <<: *compile_definition
 
 clang-16.04:
