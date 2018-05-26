@@ -195,7 +195,8 @@ group](https://vision.in.tum.de) in 2017 by Paul Bergmann.
 
 It is currently maintained by Paul Bermann,
 [Rui Wang](https://vision.in.tum.de/members/wangr) and
-[Nikolaus Demmel](https://vision.in.tum.de/members/demmeln).
+[Nikolaus Demmel](https://vision.in.tum.de/members/demmeln). See
+[AUTHROS.txt](AUTHORS.txt) for a list of contributors.
 
 This project is available under a BSD 3-Clause license.
 See [LICENSE.txt](LICENSE.txt)

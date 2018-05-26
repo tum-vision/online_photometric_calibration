@@ -1,10 +1,6 @@
-
-
-Note: This license has also been called the "New BSD License" or "Modified BSD License". See also the 2-clause BSD License.
-
 3-Clause BSD License
 
-Copyright 2017-2018 Paul Bergmann, Rui Wang, Nikolaus Demmel
+Copyright 2017-2018 Paul Bergmann and co-authors (see AUTHORS.txt)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
