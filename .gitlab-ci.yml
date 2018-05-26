@@ -36,7 +36,7 @@ clang-16.04:
   <<: *compile_definition
 
 release-14.04:
-  image: nikolausdemmel/ubuntu-dev-base:14.04
+  image: nikolausdemmel/ubuntu-dev-cv:14.04
   variables:
     CC: /usr/lib/ccache/gcc
     CXX: /usr/lib/ccache/g++
