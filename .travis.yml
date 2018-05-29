@@ -1,0 +1,73 @@
+sudo: required
+
+language: cpp
+
+services:
+  - docker
+
+cache: ccache
+
+env:
+  global:
+    - DOCKER_CONTAINER_NAME=nikolausdemmel/ubuntu-dev-cv-gui
+    - CC=/usr/bin/gcc
+    - CXX=/usr/bin/g++
+    - BUILD_TYPE=Release
+matrix:
+  include:
+  - os: linux
+    env: DIST_VERS=16.04 
+  - os: linux
+    env: DIST_VERS=16.04 CC=/usr/bin/clang-5.0 CXX=/usr/bin/clang++-5.0
+  - os: linux
+    env: DIST_VERS=16.04 BUILD_TYPE=Debug
+  - os: linux
+    env: DIST_VERS=14.04
+  - os: osx
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  
+install: |
+  if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    docker pull $DOCKER_CONTAINER_NAME:$DIST_VERS
+  fi
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    # else linking python@2 fails (dependency of opencv@2)
+    brew unlink python
+    # installing numpy fails because of existing files (dependency of opencv@2)
+    brew install numpy || brew link --overwrite numpy
+    # upgrade already installed
+    brew upgrade cmake
+    # install additional dependencies
+    brew install opencv@2 ccache
+  fi
+
+
+
+script: |
+  if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    docker run --name ci -it \
+        -v ${TRAVIS_BUILD_DIR}:/repo \
+        -v $HOME/.ccache:/root/.ccache \
+        -e BUILD_TYPE -e CC -e CXX \
+        $DOCKER_CONTAINER_NAME:$DIST_VERS \
+        /bin/bash -c '
+    export PS4='\''+ \e[33;1m($0 @ line $LINENO) \$\e[0m '\'' # quotes must be escaped
+    set -e # exit on failure
+    set -x # trace for debug
+    mkdir build && cd build
+    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE /repo
+    cmake --build .'
+  fi
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    mkdir build && cd build
+    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
+    cmake --build .
+  fi
+
+
+# TODO: try w/o docker, just installing from apt; compare speed.
+#jobs:
+#  foo:
+
