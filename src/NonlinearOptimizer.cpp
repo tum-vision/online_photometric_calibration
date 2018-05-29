@@ -790,6 +790,9 @@ double NonlinearOptimizer::visualizeOptimizationResult(double* inverse_response)
     }
     
     cv::imshow("Estimated Response", response_vis_image);
+    // TODO: move only the first time the window is created,
+    //       to allow the user to move it somewhere else.
+    //       Same for other calls to "moveWindow".
     cv::moveWindow("Estimated Response", 20,20);
 
     // Show the vignetting

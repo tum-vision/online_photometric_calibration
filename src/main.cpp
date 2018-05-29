@@ -337,7 +337,15 @@ int run_online_calibration(Settings *run_settings,std::vector<double> gt_exp_tim
 
     pthread_join(opt_thread,NULL);
 
-    // TODO: wait for user input, then exit
+    if(optimize_cnt > 0)
+    {
+        // Write the result to the database, visualize the result
+        database.m_vignette_estimate.setVignetteParameters(backend_optimizer.m_vignette_estimate);
+        database.m_response_estimate.setGrossbergParameterVector(backend_optimizer.m_response_estimate);
+        database.m_response_estimate.setInverseResponseVector(backend_optimizer.m_raw_inverse_response);
+
+        vis_exponent = backend_optimizer.visualizeOptimizationResult(backend_optimizer.m_raw_inverse_response);
+    }
     
     return 0;
 }
@@ -434,6 +442,11 @@ int main(int argc, char** argv)
         std::cout << "Error: Unknown calibration mode '" << run_settings.calibration_mode << "'." << std::endl;
         return -1;
     }
+
+    // wait for key-press, then exit
+    std::cout << "Finished. Press key to exit." << std::endl;
+    cv::waitKey(0);
+
     return 0;
 }
 
